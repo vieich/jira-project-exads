@@ -14,7 +14,7 @@ class UserRepo extends Database implements UserRepository
     public function findAll(): array
     {
         $users = $this->getConnection()
-            ->query('SELECT * FROM user')
+            ->query('SELECT id, name, role, isActive FROM users')
             ->fetchAll(PDO::FETCH_ASSOC);
 
         $result = [];
@@ -22,9 +22,9 @@ class UserRepo extends Database implements UserRepository
         foreach ($users as $user) {
             $result[] = new User(
                 $user['id'],
-                $user['username'],
-                $user['firstName'],
-                $user['lastName']
+                $user['name'],
+                $user['role'],
+                $user['isActive']
             );
         }
         return $result;

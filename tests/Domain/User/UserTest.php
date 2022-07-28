@@ -31,8 +31,8 @@ class UserTest extends TestCase
         $user = new User($id, $username, $firstName, $lastName);
 
         $this->assertEquals($id, $user->getId());
-        $this->assertEquals($username, $user->getUsername());
-        $this->assertEquals($firstName, $user->getFirstName());
+        $this->assertEquals($username, $user->getName());
+        $this->assertEquals($firstName, $user->getRole());
         $this->assertEquals($lastName, $user->getLastName());
     }
 
