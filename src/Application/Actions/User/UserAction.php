@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
 
 abstract class UserAction extends Action
 {
-    protected UserRepository $userRepository;
+    protected $userRepository;
 
     public function __construct(LoggerInterface $logger, UserRepository $userRepository)
     {

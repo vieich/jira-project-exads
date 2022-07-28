@@ -12,7 +12,7 @@ class InMemoryUserRepository implements UserRepository
     /**
      * @var User[]
      */
-    private array $users;
+    private $users;
 
     /**
      * @param User[]|null $users

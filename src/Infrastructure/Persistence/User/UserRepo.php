@@ -24,7 +24,7 @@ class UserRepo extends Database implements UserRepository
                 $user['id'],
                 $user['username'],
                 $user['firstName'],
-                $user['lastname']
+                $user['lastName']
             );
         }
         return $result;
@@ -32,6 +32,6 @@ class UserRepo extends Database implements UserRepository
 
     public function findUserOfId(int $id): User
     {
-        return new User(1, "", "", "");
+        return new User(1, "teste", "teste", "teste");
     }
 }

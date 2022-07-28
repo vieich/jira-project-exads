@@ -7,13 +7,13 @@ use JsonSerializable;
 
 class User implements JsonSerializable
 {
-    private ?int $id;
+    private $id;
 
-    private string $username;
+    private $username;
 
-    private string $firstName;
+    private $firstName;
 
-    private string $lastName;
+    private $lastName;
 
     public function __construct(?int $id, string $username, string $firstName, string $lastName)
     {
