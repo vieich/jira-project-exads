@@ -4,20 +4,19 @@ declare(strict_types=1);
 namespace App\Application\Actions;
 
 use App\Domain\DomainException\DomainRecordNotFoundException;
+use App\Domain\DomainException\DomainRecordWithoutAuthorizationException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpNotFoundException;
 
 abstract class Action
 {
     protected $logger;
-
     protected $request;
-
     protected $response;
-
     protected $args;
 
     public function __construct(LoggerInterface $logger)
@@ -39,6 +38,8 @@ abstract class Action
             return $this->action();
         } catch (DomainRecordNotFoundException $e) {
             throw new HttpNotFoundException($this->request, $e->getMessage());
+        } catch (DomainRecordWithoutAuthorizationException $e) {
+            throw new HttpForbiddenException($this->request, $e->getMessage());
         }
     }
 

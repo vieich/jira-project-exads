@@ -26,7 +26,17 @@ return function (ContainerBuilder $containerBuilder) {
                     'database' => 'sandbox',
                     'username' => 'sandbox',
                     'password' => 'sandbox',
-                    'charset' => 'utf8mb4'
+                    'charset' => 'utf8mb4',
+                    'flags' => [
+                        // Turn off persistent connections
+                        PDO::ATTR_PERSISTENT => false,
+                        // Enable exceptions
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        // Emulate prepared statements
+                        PDO::ATTR_EMULATE_PREPARES => true,
+                        // Set default fetch mode to array
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                    ],
                 ],
             ]);
         }

@@ -15,8 +15,8 @@ class User implements JsonSerializable
     public function __construct(int $id, string $name, string $role, bool $isActive)
     {
         $this->id = $id;
-        $this->name = strtolower($name);
-        $this->role = ucfirst($role);
+        $this->name = $name;
+        $this->role = $role;
         $this->isActive = $isActive;
     }
 
