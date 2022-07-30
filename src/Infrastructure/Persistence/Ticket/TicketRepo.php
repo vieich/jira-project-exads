@@ -22,14 +22,14 @@ class TicketRepo extends Database implements TicketRepository
         return new Ticket(1, 'test', 1, false);
     }
 
-    public function createTicket(string $ticketName, string $ticketCreator): Ticket
+    public function createTicket(string $ticketName, int $creatorId, string $creatorToken): Ticket
     {
         /*
          * Validação se user existe na bd
          * Falta fazer mais validações por exemplo se o User tem role admin
          * etc.
          */
-        $validation = $this->checkUserPermission($ticketCreator);
+        $validation = $this->checkUserPermission($creatorId, $creatorToken);
 
         if (count($validation) > 1) {
             throw new UserNoAuthorizationException($validation['message']);
@@ -40,7 +40,7 @@ class TicketRepo extends Database implements TicketRepository
         $query = "INSERT INTO tickets (name, user_id) VALUE (:name, :user_id)";
 
         $stmt = $this->connection->prepare($query);
-        $stmt->bindValue('name', $ticketCreator);
+        $stmt->bindValue('name', $creatorToken);
         $stmt->bindValue('user_id', $user_id, PDO::PARAM_INT);
         $stmt->execute();
 
@@ -56,21 +56,26 @@ class TicketRepo extends Database implements TicketRepository
         );
     }
 
-    private function checkUserPermission(string $ticketCreator): array
+    private function checkUserPermission(int $creatorId, string $creatorToken): array
     {
         $user_id = 0;
         $message = "";
 
-        $query = 'SELECT * FROM users WHERE 1 = 1 AND name = :name';
+        $query = 'SELECT * FROM users WHERE 1 = 1 AND id = :id';
 
         $stmt = $this->connection->prepare($query);
-        $stmt->bindValue('name', $ticketCreator); // default value PDO::PARAM_STR
+        $stmt->bindValue('id', $creatorId); // default value PDO::PARAM_STR
         $stmt->execute();
 
         $user = $stmt->fetch();
 
         if (!$user) {
             $message = "User not found, so you are not able to create a ticket";
+            return ['user_id' => $user_id,
+                'message' => $message];
+        }
+        if ($user['password'] !== $creatorToken) {
+            $message = "User token is wrong";
             return ['user_id' => $user_id,
                 'message' => $message];
         }

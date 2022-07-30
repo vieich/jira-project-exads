@@ -2,9 +2,7 @@
 
 namespace App\Application\Actions\Ticket;
 
-use App\Domain\DomainException\DomainRecordNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Exception\HttpBadRequestException;
 
 class CreatTicketAction extends TicketAction
 {
@@ -13,9 +11,10 @@ class CreatTicketAction extends TicketAction
     {
         $data = json_decode(file_get_contents('php://input'), true);
         $ticketName = $data['ticket_name'];
-        $ticketCreator = $data['ticket_creator'];
+        $ticketCreatorId = $data['ticket_creator_id'];
+        $ticketCreatorToken = $data['ticket_creator_token'];
 
-        $ticket = $this->ticketRepository->createTicket($ticketName, $ticketCreator);
+        $ticket = $this->ticketRepository->createTicket($ticketName, $ticketCreatorId, $ticketCreatorToken);
 
         return $this->respondWithData($ticket);
     }
