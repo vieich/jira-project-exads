@@ -10,16 +10,16 @@ class User implements JsonSerializable
     private $id;
     private $name;
     private $role;
-    private $token;
+    private $password;
     private $isActive;
 
-    public function __construct(int $id, string $name, string $role, bool $isActive, string $token)
+    public function __construct(int $id, string $name, string $role, bool $isActive, string $password)
     {
         $this->id = $id;
         $this->name = $name;
         $this->role = $role;
         $this->isActive = $isActive;
-        $this->token = $token;
+        $this->password = $password;
     }
 
     public function getId(): ?int
@@ -37,9 +37,9 @@ class User implements JsonSerializable
         return $this->role;
     }
 
-    public function getToken(): string
+    public function getPassword(): string
     {
-        return $this->token;
+        return $this->password;
     }
 
     public function getIsActive(): bool
@@ -53,8 +53,7 @@ class User implements JsonSerializable
             'id' => $this->id,
             'name' => $this->name,
             'role' => $this->role,
-            'isActive' => $this->isActive,
-            'token' => $this->token
+            'isActive' => $this->isActive
         ];
     }
 }

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
+use App\Domain\DomainException\DomainPayloadDataValidatorException;
+use App\Domain\DomainException\DomainPayloadStructureValidatorException;
 use App\Domain\DomainException\DomainRecordNotFoundException;
 use App\Domain\DomainException\DomainRecordWithoutAuthorizationException;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -40,6 +42,10 @@ abstract class Action
             throw new HttpNotFoundException($this->request, $e->getMessage());
         } catch (DomainRecordWithoutAuthorizationException $e) {
             throw new HttpForbiddenException($this->request, $e->getMessage());
+        } catch (DomainPayloadStructureValidatorException $e) {
+            throw new HttpBadRequestException($this->request, $e->getMessage());
+        } catch (DomainPayloadDataValidatorException $e) {
+            throw new HttpBadRequestException($this->request, $e->getMessage());
         }
     }
 

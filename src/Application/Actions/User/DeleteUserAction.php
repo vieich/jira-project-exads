@@ -2,21 +2,27 @@
 
 namespace App\Application\Actions\User;
 
-use App\Domain\DomainException\DomainRecordNotFoundException;
+use App\Domain\User\Exception\UserPayloadDataException;
+use App\Domain\User\Exception\UserPayloadStructureException;
 use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Exception\HttpBadRequestException;
 
 class DeleteUserAction extends UserAction
 {
 
     protected function action(): Response
     {
-        $userId = (int) $this->resolveArg('id');
-
         $data = json_decode(file_get_contents('php://input'), true);
-        $userToken = $data['user_token'];
+        $username = $data['username'] ?? null;
 
-        $user = $this->userRepository->deleteUser($userId, $userToken);
+        if (!isset($username)) {
+            throw new UserPayloadStructureException('Payload does not meet the requirements');
+        }
+
+        if(!UserValidator::getInstance()->isUsernameValid($username)) {
+            throw new UserPayloadDataException('Username is not valid');
+        }
+
+        $user = $this->userRepository->deleteUser($username);
 
         return $this->respondWithData($user);
     }

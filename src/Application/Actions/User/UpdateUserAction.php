@@ -14,13 +14,24 @@ class UpdateUserAction extends UserAction
         $userId = (int) $this->resolveArg('id');
 
         $data = json_decode(file_get_contents('php://input'), true);
-        $userToken = $data['user_token']  ?? null;
-        $userName = $data['user_name'] ?? null;
-        $userRole = $data['user_role'] ?? null;
-        $userIsActive = $data['user_is_active'] ?? null;
+        $username = $data['name'] ?? null;
+        $userRole = $data['role'] ?? null;
+        $userIsActive = $data['is_active'] ?? null;
+        $userToken = $data['password']  ?? null;
 
+        if(isset($username)) {
+            if (!UserValidator::getInstance()->isUsernameValid($username)) {
+                throw new UserPayloadDataException('Username not valid');
+            }
+        }
 
-        $user = $this->userRepository->updateUser($userId, $userToken, $userName, $userRole, $userIsActive);
+        if(isset($userRole)) {
+            if (!UserValidator::getInstance()->isRoleValid($userRole)) {
+                throw new UserPayloadDataException('Role not valid');
+            }
+        }
+
+        $user = $this->userRepository->updateUser($userId, $userToken, $username, $userRole, $userIsActive);
 
         return $this->respondWithData($user);
     }

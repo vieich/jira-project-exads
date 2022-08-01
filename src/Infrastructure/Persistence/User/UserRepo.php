@@ -62,35 +62,32 @@ class UserRepo extends Database implements UserRepository
         );
     }
 
-    public function createUser(string $name, string $role, bool $isActive): User
+    public function createUser(string $name, string $role, string $password): User
     {
-        $inputValidation = UserValidator::getInstance()->validateUser($name, $role);
-
-        if (!$inputValidation['hasSuccess']) {
-            throw new UserNoAuthorizationException($inputValidation['message']);
-        }
-
-        $token = UserValidator::getInstance()->createUniqueId();
-
         $query = 'INSERT INTO users (name, role, password, isActive) VALUE (:name, :role, :password, :isActive)';
 
         $stmt = $this->connection->prepare($query);
         $stmt->bindValue('name', strtolower($name));
         $stmt->bindValue('role', strtolower($role));
-        $stmt->bindValue('password', $token);
-        $stmt->bindValue('isActive', $isActive);
+        $stmt->bindValue('password', $password);
+        $stmt->bindValue('isActive', true);
         $stmt->execute();
 
         if ($stmt->rowCount() == 0) {
-            throw new UserNotFoundException('Error creating User');
+            $message = 'Operation was not possible';
+            if (str_contains($stmt->errorInfo()[2], "Duplicate")) {
+                $message = 'That username is not available';
+                throw new UserNotFoundException($message);
+            }
+            throw new UserNotFoundException($message);
         }
 
         return new User(
             (int) $this->connection->lastInsertId(),
             $name,
             $role,
-            $isActive,
-            $token
+            true,
+            $password
         );
     }
 
@@ -139,22 +136,37 @@ class UserRepo extends Database implements UserRepository
         ];
     }
 
-    public function deleteUser(int $id, string $token): array
+    public function updateIsActive(string $username, string $value): array
     {
-        // Se houver um ticket associado a um user não conseguimos deletar o user,
-        // Temos que usar delete oncascade i guess;
+        $isActive = true;
 
-        $inputValidation = UserValidator::getInstance()->validateUser(null, null, $token);
-
-        if (!$inputValidation['hasSuccess']) {
-            throw new UserNoAuthorizationException($inputValidation['message']);
+        if($value == 'logout') {
+            $isActive = false;
         }
 
-        $query = "DELETE FROM users WHERE id = :id AND password = :token";
+        $query = 'UPDATE users SET isActive = :isActive WHERE name = :username ';
 
         $stmt = $this->connection->prepare($query);
-        $stmt->bindValue('id', $id, PDO::PARAM_INT);
-        $stmt->bindValue('token', $token);
+        $stmt->bindValue('isActive', $isActive, PDO::PARAM_BOOL);
+        $stmt->bindValue('username', $username);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 0) {
+            throw new UserNotFoundException($query);
+        }
+
+        return [
+            'hasSuccess' => true,
+            'message' => $value . ' successful'
+        ];
+    }
+
+    public function deleteUser(string $username): array
+    {
+        $query = "DELETE FROM users WHERE 1 = 1 AND name = :name";
+
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('name', $username);
         $stmt->execute();
 
         if ($stmt->rowCount() == 0) {
