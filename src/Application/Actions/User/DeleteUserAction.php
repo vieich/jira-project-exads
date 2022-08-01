@@ -6,17 +6,17 @@ use App\Domain\DomainException\DomainRecordNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 
-class CreateUserAction extends UserAction
+class DeleteUserAction extends UserAction
 {
 
     protected function action(): Response
     {
-        $data = json_decode(file_get_contents('php://input'), true);
-        $userName = $data['user_name'];
-        $userRole = $data['user_role'];
-        $userIsActive = $data['user_is_active'] ?? false;
+        $userId = (int) $this->resolveArg('id');
 
-        $user = $this->userRepository->createUser($userName, $userRole, $userIsActive);
+        $data = json_decode(file_get_contents('php://input'), true);
+        $userToken = $data['user_token'];
+
+        $user = $this->userRepository->deleteUser($userId, $userToken);
 
         return $this->respondWithData($user);
     }

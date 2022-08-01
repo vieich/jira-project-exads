@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 use App\Application\Actions\User\CreateUserAction;
+use App\Application\Actions\User\DeleteUserAction;
 use App\Application\Actions\User\ListUsersAction;
+use App\Application\Actions\User\UpdateUserAction;
 use App\Application\Actions\User\ViewUserAction;
 
 use App\Application\Actions\Ticket\CreatTicketAction;
@@ -27,7 +29,9 @@ return function (App $app) {
         $group->get('', ListUsersAction::class);
         $group->get('/', ListUsersAction::class);
         $group->get('/{id}', ViewUserAction::class);
-        $group->put('/create', CreateUserAction::class);
+        $group->post('/create', CreateUserAction::class);
+        $group->patch('/update/{id}', UpdateUserAction::class);
+        $group->delete('/delete/{id}', DeleteUserAction::class);
     });
 
     $app->put('/ticket/create', CreatTicketAction::class);

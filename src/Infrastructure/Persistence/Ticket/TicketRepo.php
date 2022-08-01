@@ -31,17 +31,15 @@ class TicketRepo extends Database implements TicketRepository
          */
         $validation = $this->checkUserPermission($creatorId, $creatorToken);
 
-        if (count($validation) > 1) {
+        if (!$validation['hasSuccess']) {
             throw new UserNoAuthorizationException($validation['message']);
         }
-
-        $user_id = $validation['user_id'];
 
         $query = "INSERT INTO tickets (name, user_id) VALUE (:name, :user_id)";
 
         $stmt = $this->connection->prepare($query);
         $stmt->bindValue('name', $creatorToken);
-        $stmt->bindValue('user_id', $user_id, PDO::PARAM_INT);
+        $stmt->bindValue('user_id', $creatorId, PDO::PARAM_INT);
         $stmt->execute();
 
         if ($stmt->rowCount() == 0) {
@@ -51,15 +49,17 @@ class TicketRepo extends Database implements TicketRepository
         return new Ticket(
             (int) $this->connection->lastInsertId(),
             $ticketName,
-            $user_id,
+            $creatorId,
             false
         );
     }
 
     private function checkUserPermission(int $creatorId, string $creatorToken): array
     {
-        $user_id = 0;
-        $message = "";
+        $response = [
+            'message' => '',
+            'hasSuccess' => true
+        ];
 
         $query = 'SELECT * FROM users WHERE 1 = 1 AND id = :id';
 
@@ -70,27 +70,30 @@ class TicketRepo extends Database implements TicketRepository
         $user = $stmt->fetch();
 
         if (!$user) {
-            $message = "User not found, so you are not able to create a ticket";
-            return ['user_id' => $user_id,
-                'message' => $message];
-        }
-        if ($user['password'] !== $creatorToken) {
-            $message = "User token is wrong";
-            return ['user_id' => $user_id,
-                'message' => $message];
-        }
-        if ($user['role'] !== 'admin') {
-            $message = "User has no rights to create tickets";
-            return ['user_id' => $user_id,
-                'message' => $message];
-        }
-        if (!$user['isActive']) {
-            $message = "User is inactive";
-            return ['user_id' => $user_id,
-                'message' => $message];
+            $response['message'] = 'User not found, so you are not able to create a ticket';
+            $response['hasSuccess'] = false;
+            return $response;
         }
 
-        return ['user_id' => $user['id']];
+        if ($user['password'] !== $creatorToken) {
+            $response['message'] = 'User token is wrong';
+            $response['hasSuccess'] = false;
+            return $response;
+        }
+
+        if ($user['role'] !== 'admin') {
+            $response['message'] = 'User has no rights to create tickets';
+            $response['hasSuccess'] = false;
+            return $response;
+
+        }
+        if (!$user['isActive']) {
+            $response['message'] = 'User is inactive';
+            $response['hasSuccess'] = false;
+            return $response;
+        }
+
+        return $response;
     }
 
     /*private function rowCount(\PDOStatement $stmt)

@@ -64,18 +64,18 @@ class UserRepo extends Database implements UserRepository
 
     public function createUser(string $name, string $role, bool $isActive): User
     {
-        $inputValidation = UserValidator::getInstance()->validateUser($name,$role,$isActive);
+        $inputValidation = UserValidator::getInstance()->validateUser($name, $role);
 
-        if(!$inputValidation['hasSuccess']) {
+        if (!$inputValidation['hasSuccess']) {
             throw new UserNoAuthorizationException($inputValidation['message']);
         }
 
         $token = UserValidator::getInstance()->createUniqueId();
 
-        $query = 'INSERT INTO users (name, role, password, isActive, updateAt) VALUE (:name, :role, :password, :isActive, now())';
+        $query = 'INSERT INTO users (name, role, password, isActive) VALUE (:name, :role, :password, :isActive)';
 
         $stmt = $this->connection->prepare($query);
-        $stmt->bindValue('name', $name);
+        $stmt->bindValue('name', strtolower($name));
         $stmt->bindValue('role', strtolower($role));
         $stmt->bindValue('password', $token);
         $stmt->bindValue('isActive', $isActive);
@@ -92,5 +92,78 @@ class UserRepo extends Database implements UserRepository
             $isActive,
             $token
         );
+    }
+
+    public function updateUser(int $id, string $token = null, string $name = null, string $role = null, bool $isActive = null) :array
+    {
+        if (!isset($token)) {
+            throw new UserNoAuthorizationException('You need to pass the token to make the operation');
+        }
+
+        $inputValidation = UserValidator::getInstance()->validateUser($name, $role, $token);
+
+        if (!$inputValidation['hasSuccess']) {
+            throw new UserNoAuthorizationException($inputValidation['message']);
+        }
+
+        $query = 'UPDATE users SET ';
+        $conditionToSelectUser = ' WHERE id = :id AND password = :token';
+
+        if (isset($name) && isset($role) && isset($isActive)) {
+            $query .= 'name = :name, role = :role, isActive = :isActive';
+        } elseif (isset($name) && isset($role)) {
+            $query .= 'name = :name, role = :role';
+        } elseif (isset($name) && isset($isActive)) {
+            $query .= 'name = :name, isActive = :isActive';
+        } elseif (isset($role) && isset($isActive)) {
+            $query .= 'role = :role, isActive = :isActive';
+        }
+
+        $query .= $conditionToSelectUser;
+
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('name', strtolower($name));
+        $stmt->bindValue('role', strtolower($role));
+        $stmt->bindValue('isActive', $isActive, PDO::PARAM_BOOL);
+        $stmt->bindValue('id', $id, PDO::PARAM_INT);
+        $stmt->bindValue('token', $token);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 0) {
+            throw new UserNotFoundException($query);
+        }
+
+        return [
+            'hasSuccess' => true,
+            'message' => 'User updated'
+        ];
+    }
+
+    public function deleteUser(int $id, string $token): array
+    {
+        // Se houver um ticket associado a um user não conseguimos deletar o user,
+        // Temos que usar delete oncascade i guess;
+
+        $inputValidation = UserValidator::getInstance()->validateUser(null, null, $token);
+
+        if (!$inputValidation['hasSuccess']) {
+            throw new UserNoAuthorizationException($inputValidation['message']);
+        }
+
+        $query = "DELETE FROM users WHERE id = :id AND password = :token";
+
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('id', $id, PDO::PARAM_INT);
+        $stmt->bindValue('token', $token);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 0) {
+            throw new UserNotFoundException($query);
+        }
+
+        return [
+            'hasSuccess' => true,
+            'message' => 'User deleted'
+        ];
     }
 }
