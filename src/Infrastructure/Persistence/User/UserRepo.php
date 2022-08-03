@@ -2,20 +2,19 @@
 
 namespace App\Infrastructure\Persistence\User;
 
-use App\Domain\User\UserNoAuthorizationException;
-use App\Domain\User\UserNotFoundException;
+use App\Domain\User\Exception\UserNoAuthorizationException;
+use App\Domain\User\Exception\UserNotFoundException;
+use App\Domain\User\User;
 use App\Domain\User\UserRepository;
 use App\Domain\User\UserValidator;
 use App\Infrastructure\Persistence\Database;
-use App\Domain\User\User;
 use PDO;
 
 class UserRepo extends Database implements UserRepository
 {
-
     public function findAll(): array
     {
-        $query = 'SELECT id, name, role, isActive FROM users';
+        $query = 'SELECT id, name, role, isActive, password FROM users';
 
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
@@ -41,7 +40,7 @@ class UserRepo extends Database implements UserRepository
 
     public function findUserOfId(int $id): User
     {
-        $query = 'SELECT id, name, role, isActive, password FROM users WHERE 1 = 1 AND id=:id';
+        $query = 'SELECT id, name, role, password, isActive FROM users WHERE id = :id';
 
         $stmt = $this->connection->prepare($query);
         $stmt->bindValue('id', $id, PDO::PARAM_INT);
@@ -65,25 +64,24 @@ class UserRepo extends Database implements UserRepository
     public function createUser(string $name, string $role, string $password): User
     {
         $query = 'INSERT INTO users (name, role, password, isActive) VALUE (:name, :role, :password, :isActive)';
+        $dbConnection = $this->getConnection();
 
-        $stmt = $this->connection->prepare($query);
-        $stmt->bindValue('name', strtolower($name));
-        $stmt->bindValue('role', strtolower($role));
-        $stmt->bindValue('password', $password);
-        $stmt->bindValue('isActive', true);
-        $stmt->execute();
+        try {
+            $stmt = $dbConnection->prepare($query);
+            $stmt->bindValue('name', strtolower($name));
+            $stmt->bindValue('role', strtolower($role));
+            $stmt->bindValue('password', $password);
+            $stmt->bindValue('isActive', true);
+            $stmt->execute();
 
-        if ($stmt->rowCount() == 0) {
-            $message = 'Operation was not possible';
-            if (str_contains($stmt->errorInfo()[2], "Duplicate")) {
-                $message = 'That username is not available';
-                throw new UserNotFoundException($message);
-            }
-            throw new UserNotFoundException($message);
+            $userId = $dbConnection->lastInsertId();
+
+        } catch (\PDOException $e) {
+            throw new UserNoAuthorizationException($e->getMessage());
         }
 
         return new User(
-            (int) $this->connection->lastInsertId(),
+            $userId,
             $name,
             $role,
             true,
@@ -140,7 +138,7 @@ class UserRepo extends Database implements UserRepository
     {
         $isActive = true;
 
-        if($value == 'logout') {
+        if ($value == 'logout') {
             $isActive = false;
         }
 
@@ -170,12 +168,79 @@ class UserRepo extends Database implements UserRepository
         $stmt->execute();
 
         if ($stmt->rowCount() == 0) {
-            throw new UserNotFoundException($query);
+            throw new UserNotFoundException($username . " does not exist");
         }
 
         return [
             'hasSuccess' => true,
-            'message' => 'User deleted'
+            'message' => $username . ' deleted'
         ];
+    }
+
+    public function createToken(string $username): array
+    {
+        $response = [
+            'token' => "",
+            "hasSuccess" => true
+        ];
+
+        $query = 'SELECT id FROM users WHERE name = :name';
+        $query2 = "DELETE FROM tokens WHERE user_id = :userId";
+        $query3 = "INSERT INTO tokens (token, user_id) VALUE (:token, :userId)";
+
+        $token = hash('sha256', uniqid());
+
+        $dbConnection = $this->getConnection();
+        $dbConnection->beginTransaction();
+
+        try {
+            $stmt = $dbConnection->prepare($query);
+            $stmt->bindValue('name', $username);
+            $stmt->execute();
+
+            $userId = $stmt->fetch()['id'];
+
+            $stmt = $dbConnection->prepare($query2);
+            $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $stmt = $dbConnection->prepare($query3);
+            $stmt->bindValue('token', $token);
+            $stmt->bindValue('userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $dbConnection->commit();
+        } catch (\PDOException $e) {
+            $dbConnection->rollBack();
+            $response['token'] = $e->getMessage();
+            $response['hasSuccess'] = false;
+            return $response;
+        }
+        $response['token'] = $token;
+
+        return $response;
+    }
+
+    public function getToken(string $username): array
+    {
+        $response = [
+            'token' => "",
+            "hasSuccess" => true
+        ];
+
+        $query = 'SELECT t.token FROM tokens t JOIN users u ON u.id = t.user_id WHERE u.name = :username';
+
+        $dbConnection = $this->getConnection();
+
+        $stmt = $dbConnection->prepare($query);
+        $stmt->bindValue('username', $username);
+        $stmt->execute();
+
+        $token = $stmt->fetch();
+
+        $response['token'] = $token['token'] ?? "";
+        $response['hasSuccess'] = $response['token'] != "";
+
+        return $response;
     }
 }

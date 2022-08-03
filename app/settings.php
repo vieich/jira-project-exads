@@ -29,7 +29,7 @@ return function (ContainerBuilder $containerBuilder) {
                     'charset' => 'utf8mb4',
                     'flags' => [
                         // Turn off persistent connections
-                        PDO::ATTR_PERSISTENT => false,
+                        PDO::ATTR_PERSISTENT => true,
                         // Enable exceptions
                         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                         // Emulate prepared statements

@@ -2,7 +2,6 @@
 
 namespace App\Application\Actions\User;
 
-use App\Domain\DomainException\DomainRecordNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 
@@ -20,7 +19,7 @@ class UpdateUserAction extends UserAction
         $userToken = $data['password']  ?? null;
 
         if(isset($username)) {
-            if (!UserValidator::getInstance()->isUsernameValid($username)) {
+            if (!UserValidator::getInstance()->checkIfUsernameIsValid($username)) {
                 throw new UserPayloadDataException('Username not valid');
             }
         }

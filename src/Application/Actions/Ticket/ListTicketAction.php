@@ -1,35 +1,28 @@
 <?php
-declare(strict_types=1);
 
-namespace App\Application\Actions\User;
+namespace App\Application\Actions\Ticket;
 
 use App\Application\Actions\Permission\PermissionValidator;
+use App\Infrastructure\Persistence\Permission\PermissionRepo;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpBadRequestException;
 
-class ListUsersAction extends UserAction
+class ListTicketAction extends TicketAction
 {
-    /**
-     * {@inheritdoc}
-     */
+
     protected function action(): Response
     {
         $headers = apache_request_headers();
         $auth_token = $headers['Auth-Token'] ?? null;
 
         $permissionValidator = PermissionValidator::getInstance();
-
         $permissionRepo = $this->permissionRepo;
-        $userRepo = $this->userRepository;
 
         $permissionValidator->checkIfAuthTokenFormatIsValid($auth_token);
-
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'read');
 
-        $users = $userRepo->findAll();
+        $permissionRepo->checkIfUserCanDoOperation($auth_token,'read');
 
-        $this->logger->info("Users list was viewed.");
-
-        return $this->respondWithData($users);
+        return $this->respondWithData([]);
     }
 }

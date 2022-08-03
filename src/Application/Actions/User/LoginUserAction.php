@@ -2,29 +2,35 @@
 
 namespace App\Application\Actions\User;
 
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionLoginException;
 use App\Domain\User\Exception\UserPayloadStructureException;
-use App\Domain\User\UserNoAuthorizationException;
 use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Exception\HttpBadRequestException;
 
 class LoginUserAction extends UserAction
 {
+    /**
+     * @throws PermissionAuthTokenException
+     * @throws PermissionLoginException
+     * @throws UserPayloadStructureException
+     */
     protected function action(): Response
     {
         $data = json_decode(file_get_contents('php://input'), true);
-        $userName = $data['username'] ?? null;
-        $userPassword = $data['password'] ?? null;
+        $username = $data['username'] ?? null;
+        $password = $data['password'] ?? null;
 
-        if (!isset($userName)  || !isset($userPassword)) {
-            throw new UserPayloadStructureException('Payload does not meet the requirements');
-        }
+        $args = compact('username', 'password');
 
-        if (!$this->permissionRepo->checkIfUserPasswordIsCorrect($userName, $userPassword)) {
-            throw new UserNoAuthorizationException('Login failed, wrong password or username');
-        }
+        $userValidator = UserValidator::getInstance();
+        $permissionRepo = $this->permissionRepo;
 
-        $result = $this->userRepository->updateIsActive($userName, 'login');
+        $userValidator->checkIfPayloadIsValid($args);
 
-        return $this->respondWithData($result);
+        $permissionRepo->checkIfUserPasswordIsCorrect($username, $password);
+
+        $getAuthToken = $permissionRepo->getAuthToken($username);
+
+        return $this->respondWithData($getAuthToken);
     }
 }

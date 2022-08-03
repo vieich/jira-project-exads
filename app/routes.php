@@ -1,15 +1,17 @@
 <?php
 declare(strict_types=1);
 
+use App\Application\Actions\Ticket\DeleteTicketAction;
+use App\Application\Actions\Ticket\ListTicketAction;
+
 use App\Application\Actions\User\CreateUserAction;
 use App\Application\Actions\User\DeleteUserAction;
 use App\Application\Actions\User\ListUsersAction;
 use App\Application\Actions\User\LoginUserAction;
-use App\Application\Actions\User\LogoutUserAction;
 use App\Application\Actions\User\UpdateUserAction;
 use App\Application\Actions\User\ViewUserAction;
 
-use App\Application\Actions\Ticket\CreatTicketAction;
+use App\Application\Actions\Ticket\CreateTicketAction;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -35,8 +37,9 @@ return function (App $app) {
         $group->patch('/update/{id}', UpdateUserAction::class);
         $group->delete('/delete', DeleteUserAction::class);
         $group->post('/login', LoginUserAction::class);
-        $group->post('/logout', LogoutUserAction::class);
     });
 
-    $app->put('/ticket/create', CreatTicketAction::class);
+    $app->post('/ticket/create', CreateTicketAction::class);
+    $app->delete('/ticket/delete/{id}', DeleteTicketAction::class);
+    $app->get('/tickets', ListTicketAction::class);
 };

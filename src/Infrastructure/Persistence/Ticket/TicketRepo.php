@@ -2,9 +2,9 @@
 
 namespace App\Infrastructure\Persistence\Ticket;
 
+use App\Domain\Ticket\Exception\TicketNotFoundException;
 use App\Domain\Ticket\Ticket;
 use App\Domain\Ticket\TicketRepository;
-use App\Domain\User\UserNotFoundException;
 use App\Infrastructure\Persistence\Database;
 use PDO;
 
@@ -31,7 +31,7 @@ class TicketRepo extends Database implements TicketRepository
         $stmt->execute();
 
         if ($stmt->rowCount() == 0) {
-            throw new UserNotFoundException('Error creating ticket');
+            throw new TicketNotFoundException('Error creating ticket');
         }
 
         return new Ticket(
@@ -40,5 +40,29 @@ class TicketRepo extends Database implements TicketRepository
             $creatorId,
             false
         );
+    }
+
+    public function deleteTicket(int $ticketId)
+    {
+        $query = 'DELETE FROM tickets WHERE id = :id';
+
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('id', $ticketId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 0) {
+            throw new TicketNotFoundException();
+        }
+
+        return [
+            'message' => 'Ticket with id ' . $ticketId . ' deleted',
+            'hasSuccess' => true
+        ];
+    }
+
+    public function updateTicket(int $ticketId, array $valuesToUpdate)
+    {
+        $name = array_key_exists('name', $valuesToUpdate) ? $valuesToUpdate['name'] : null;
+        $isDone = array_key_exists('isDone', $valuesToUpdate) ? $valuesToUpdate['isDone'] : null;
     }
 }
