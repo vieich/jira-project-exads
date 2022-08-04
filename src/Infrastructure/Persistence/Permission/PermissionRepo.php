@@ -3,7 +3,6 @@
 namespace App\Infrastructure\Persistence\Permission;
 
 use App\Domain\Permission\Exception\PermissionAuthTokenException;
-use App\Domain\Permission\Exception\PermissionLoginException;
 use App\Domain\User\Exception\UserNoAuthorizationException;
 use App\Domain\User\Exception\UserNotFoundException;
 use App\Domain\User\User;
@@ -12,20 +11,6 @@ use PDO;
 
 class PermissionRepo extends Database
 {
-    public function checkIfUserPasswordIsCorrect(string $username, string $password): void
-    {
-        $query = 'SELECT password FROM users WHERE name = :username';
-
-        $stmt = $this->connection->prepare($query);
-        $stmt->bindValue('username', $username);
-        $stmt->execute();
-
-        $hashPassword = $stmt->fetch();
-
-        if (!password_verify($password, $hashPassword['password'])) {
-            throw new PermissionLoginException();
-        }
-    }
 
     public function checkIfUserCanDoOperation(string $token, string $operation): void
     {
@@ -61,20 +46,36 @@ class PermissionRepo extends Database
 
     public function checkIfAuthTokenIsValid(string $token): void
     {
-        $result = $this->checkIfTokenIsExpired($token);
+        $tokenFromDb = $this->checkIfTokenIsExpired($token);
 
-        if (!$result['hasSuccess']) {
+        if (!$tokenFromDb['hasSuccess']) {
             throw new PermissionAuthTokenException('Log in to get an valid auth token.');
         }
 
-        if ($token != $result['token']) {
+        if ($token != $tokenFromDb['token']) {
             throw new PermissionAuthTokenException('Token is not valid.');
         }
     }
 
     public function getAuthToken(string $username): array
     {
-        $responseIsTokenValid = $this->checkIfTokenIsExpired($username);
+        $query = 'SELECT t.token FROM tokens t JOIN users u on t.user_id = u.id WHERE u.name = :name';
+
+        $stmt = $this->getConnection()->prepare($query);
+        $stmt->bindValue('name', $username);
+        $stmt->execute();
+
+        $tokenFromDb = $stmt->fetch();
+
+        if (!$tokenFromDb) {
+            $token = $this->createToken($username);
+            if (!$token['hasSuccess']) {
+                throw new PermissionAuthTokenException('Error while trying to create an Auth Token');
+            }
+            return $token;
+        }
+
+        $responseIsTokenValid = $this->checkIfTokenIsExpired($tokenFromDb['token']);
 
         if (!$responseIsTokenValid['hasSuccess']) {
             $token = $this->createToken($username);
@@ -95,7 +96,7 @@ class PermissionRepo extends Database
 
         $timeOfLife = 5;
 
-        $query = 'SELECT token FROM tokens WHERE user_id = :user_id AND createAt + INTERVAL ' . $timeOfLife . ' MINUTE > now()';
+        $query = 'SELECT token FROM tokens WHERE user_id = :user_id AND create_at + INTERVAL ' . $timeOfLife . ' MINUTE > now()';
 
         try {
             $user = $this->getUserByToken($token);
@@ -106,10 +107,9 @@ class PermissionRepo extends Database
 
             $tokenFromDb = $stmt->fetch();
 
-            if (isset($tokenFromDb['token'])) {
+            if ($tokenFromDb['token']) {
                 $response['token'] = $tokenFromDb['token'];
                 $response['hasSuccess'] = true;
-
                 return $response;
             }
             return $response;
@@ -167,7 +167,7 @@ class PermissionRepo extends Database
 
     public function getUserByToken(string $token): User
     {
-        $query = 'SELECT u.id, u.name, u.role, u.isActive, u.password FROM users u JOIN tokens t on u.id = t.user_id WHERE t.token = :token';
+        $query = 'SELECT u.id, u.name, u.role, u.password , u.is_active FROM users u JOIN tokens t on u.id = t.user_id WHERE t.token = :token';
 
         $stmt = $this->getConnection()->prepare($query);
         $stmt->bindValue('token', $token);
@@ -183,7 +183,7 @@ class PermissionRepo extends Database
             (int) $user['id'],
             $user['name'],
             $user['role'],
-            $user['isActive'],
+            $user['is_active'],
             $user['password']
         );
     }

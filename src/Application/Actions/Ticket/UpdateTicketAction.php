@@ -2,48 +2,32 @@
 
 namespace App\Application\Actions\Ticket;
 
-use App\Domain\Ticket\Exception\TicketPayloadStructureException;
-use App\Domain\User\Exception\UserNoAuthorizationException;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class UpdateTicketAction extends TicketAction
 {
     protected function action(): Response
     {
+        $auth_token = $this->getAuthTokenHeader();
         $ticketId = (int) $this->resolveArg('id');
 
-        $data = json_decode(file_get_contents('php://input'), true);
-        $ticketName = $data['name'] ?? null;
-        $ticketIsDone = $data['is_done'] ?? null;
-        $ticketRequesterUsername = $data['requester_name'] ?? null;
-        $ticketRequesterPassword = $data['requester_password'] ?? null;
+        $data = $this->getFormData();
+        $name = $data['name'] ?? null;
+        //$is_done = $data['is_done'] ?? null;
 
-        $valuesToUpdate = [];
+        $valuesToUpdate = compact('name');
 
-        if (!isset($ticketRequesterUsername) || !isset($ticketRequesterPassword)) {
-            throw new TicketPayloadStructureException('You must pass your username and password');
-        }
+        $ticketValidator = TicketValidator::getInstance();
+        $ticketRepo = $this->ticketRepository;
+        $permissionRepo = $this->permissionRepo;
 
-        if (!$this->permissionRepo->checkIfUserPasswordIsCorrect($ticketRequesterUsername, $ticketRequesterPassword)) {
-            throw new UserNoAuthorizationException('Wrong username or password.');
-        }
+        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
+        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'update');
 
-        if (!$this->permissionRepo->checkIfUserCanDoOperation($ticketRequesterUsername, 'update')) {
-            throw new UserNoAuthorizationException('You dont have rights for that action, you must be an Admin.');
-        }
+        $ticketValidator->checkIfPayloadFormatIsValid($valuesToUpdate);
+        $ticketValidator->checkIfTicketNameIsValid($name);
 
-        if (!isset($ticketName) && !isset($ticketIsDone)) {
-            throw new TicketPayloadStructureException('No values found to update ticket.');
-        }
-
-        if (isset($ticketName)) {
-            $valuesToUpdate['name'] = $ticketName;
-        }
-
-        if (isset($ticketIsDone)) {
-            $valuesToUpdate['isDone'] = $ticketIsDone;
-        }
-
-        $ticket = $this->ticketRepository->updateTicket($ticketId, $valuesToUpdate);
+        $ticket = $ticketRepo->updateTicket($ticketId, $valuesToUpdate);
+        return $this->respondWithData($ticket);
     }
 }

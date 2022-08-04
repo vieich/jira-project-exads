@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
+use App\Domain\DomainException\DomainCreationException;
 use App\Domain\DomainException\DomainPayloadDataValidatorException;
 use App\Domain\DomainException\DomainPayloadStructureValidatorException;
 use App\Domain\DomainException\DomainRecordNotFoundException;
@@ -12,6 +13,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
+use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
 
 abstract class Action
@@ -46,6 +48,8 @@ abstract class Action
             throw new HttpBadRequestException($this->request, $e->getMessage());
         } catch (DomainPayloadDataValidatorException $e) {
             throw new HttpBadRequestException($this->request, $e->getMessage());
+        } catch (DomainCreationException $e) {
+            throw new HttpInternalServerErrorException($this->request, $e->getMessage());
         }
     }
 
@@ -61,6 +65,11 @@ abstract class Action
     protected function getFormData()
     {
         return $this->request->getParsedBody();
+    }
+
+    protected function getAuthTokenHeader()
+    {
+        return $this->request->getServerParams()['HTTP_AUTH_TOKEN'] ?? "";
     }
 
     /**

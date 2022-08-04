@@ -12,6 +12,6 @@ interface UserRepository
     public function updateUser(int $id, string $token, string $name, string $role, bool $isActive);
     public function deleteUser(string $username);
     public function updateIsActive(string $username, string $value);
-    public function getToken(string $username);
     public function createToken(string $username);
+    public function checkIfUserExists($username);
 }

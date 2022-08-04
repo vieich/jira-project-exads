@@ -2,8 +2,8 @@
 
 namespace App\Application\Actions\Ticket;
 
-use _PHPStan_9a6ded56a\Nette\Neon\Exception;
-use App\Domain\Ticket\Exception\TicketPayloadDataException;
+use App\Domain\Ticket\Exception\TicketNameFormatException;
+use App\Domain\Ticket\Exception\TicketNoAuthorizationException;
 use App\Domain\Ticket\Exception\TicketPayloadStructureException;
 
 class TicketValidator
@@ -20,8 +20,8 @@ class TicketValidator
 
     public function checkIfTicketNameIsValid($ticketName): void
     {
-        if (!preg_match("/^[A-Za-z]{2,8}$/", $ticketName)) {
-            throw new TicketPayloadDataException('Username field does not meed the rules, check documentation');
+        if (!preg_match("/^[A-Za-z]{2,12}$/", $ticketName)) {
+            throw new TicketNameFormatException();
         }
     }
 
@@ -30,12 +30,19 @@ class TicketValidator
         return is_bool($ticketIsDone);
     }
 
-    public function checkIfPayloadIsValid(array $args): void
+    public function checkIfPayloadFormatIsValid(array $args): void
     {
         foreach ($args as $key => $value) {
-            if (!isset($value)) {
+            if (!isset($value) || $value == "") {
                 throw new TicketPayloadStructureException('Payload is not valid, is missing the ' . $key . ' field');
             }
+        }
+    }
+
+    public function checkIfHeaderIsMissing(string $header): void
+    {
+        if($header == "") {
+            throw new TicketNoAuthorizationException('Auth-Token is missing on the header.');
         }
     }
 }

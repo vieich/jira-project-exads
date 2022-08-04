@@ -3,16 +3,14 @@
 namespace App\Application\Actions\User;
 
 use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Exception\HttpBadRequestException;
 
 class UpdateUserAction extends UserAction
 {
-
     protected function action(): Response
     {
         $userId = (int) $this->resolveArg('id');
 
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data = $this->getFormData();
         $username = $data['name'] ?? null;
         $userRole = $data['role'] ?? null;
         $userIsActive = $data['is_active'] ?? null;

@@ -2,21 +2,13 @@
 
 namespace App\Application\Actions\User;
 
-use App\Domain\Permission\Exception\PermissionAuthTokenException;
-use App\Domain\Permission\Exception\PermissionLoginException;
-use App\Domain\User\Exception\UserPayloadStructureException;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class LoginUserAction extends UserAction
 {
-    /**
-     * @throws PermissionAuthTokenException
-     * @throws PermissionLoginException
-     * @throws UserPayloadStructureException
-     */
     protected function action(): Response
     {
-        $data = json_decode(file_get_contents('php://input'), true);
+        $data = $this->getFormData();
         $username = $data['username'] ?? null;
         $password = $data['password'] ?? null;
 
@@ -24,10 +16,11 @@ class LoginUserAction extends UserAction
 
         $userValidator = UserValidator::getInstance();
         $permissionRepo = $this->permissionRepo;
+        $userRepo = $this->userRepository;
 
         $userValidator->checkIfPayloadIsValid($args);
-
-        $permissionRepo->checkIfUserPasswordIsCorrect($username, $password);
+        $userRepo->checkIfUserExists($username);
+        $userRepo->checkIfUserPasswordIsCorrect($username, $password);
 
         $getAuthToken = $permissionRepo->getAuthToken($username);
 

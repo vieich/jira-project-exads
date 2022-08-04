@@ -4,14 +4,16 @@ namespace App\Application\Actions\Ticket;
 
 use Psr\Http\Message\ResponseInterface as Response;
 
-class ListTicketAction extends TicketAction
+class ViewTicketAction extends TicketAction
 {
 
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
+        $ticketId = (int) $this->resolveArg('id');
 
         $permissionRepo = $this->permissionRepo;
+        $ticketRepo = $this->ticketRepository;
         $ticketValidator = TicketValidator::getInstance();
 
         $ticketValidator->checkIfHeaderIsMissing($auth_token);
@@ -19,8 +21,7 @@ class ListTicketAction extends TicketAction
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);
         $permissionRepo->checkIfUserCanDoOperation($auth_token,'read');
 
-        $tickets = $this->ticketRepository->findAll();
-
-        return $this->respondWithData($tickets);
+        $ticket = $ticketRepo->findTicketById($ticketId);
+        return $this->respondWithData($ticket);
     }
 }

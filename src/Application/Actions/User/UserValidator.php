@@ -2,8 +2,10 @@
 
 namespace App\Application\Actions\User;
 
-use App\Domain\User\Exception\UserPayloadDataException;
+use App\Domain\User\Exception\UserPasswordFormatException;
 use App\Domain\User\Exception\UserPayloadStructureException;
+use App\Domain\User\Exception\UserRoleException;
+use App\Domain\User\Exception\UserUsernameFormatException;
 
 class UserValidator
 {
@@ -34,24 +36,30 @@ class UserValidator
          * Must have between 3 and 12 characters
          */
         if (!preg_match("/^[A-Za-z]\\w{2,11}$/", $name)) {
-            throw new UserPayloadDataException('Username must have at least 4 to 12 characters, only letters,numbers and _ allowed');
+            throw new UserUsernameFormatException();
         }
     }
 
-    public function isRoleValid(string $userRole): bool
+    public function checkIfPasswordFormatIsValid(string $password): void
+    {
+        if (!preg_match("/^(?=.*?\d)[0-9a-zA-Z]{8,}$/", $password)) {
+            throw new UserPasswordFormatException();
+        }
+    }
+
+    public function checkIfPasswordAndCPasswordMatch(string $password, string $cpassword): void
+    {
+        if ($password !== $cpassword) {
+            throw new UserPasswordFormatException('Password and confirm_password fields doenst match.');
+        }
+    }
+
+    public function checkIfRoleIsValid(string $userRole): void
     {
         $userRoleLowerCase = strtolower($userRole);
 
-        return $userRoleLowerCase == 'client' || $userRoleLowerCase == 'admin';
-    }
-
-    public function isPasswordValid(string $password): bool
-    {
-        return preg_match("/^(?=.*?\d)[0-9a-zA-Z]{8,}$/", $password);
-    }
-
-    public function doesPasswordMatch(string $password, string $cpassword):bool
-    {
-        return $password == $cpassword;
+        if ($userRoleLowerCase != 'client' && $userRoleLowerCase != 'admin') {
+            throw new UserRoleException();
+        }
     }
 }

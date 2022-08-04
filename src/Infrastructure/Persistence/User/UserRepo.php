@@ -6,7 +6,6 @@ use App\Domain\User\Exception\UserNoAuthorizationException;
 use App\Domain\User\Exception\UserNotFoundException;
 use App\Domain\User\User;
 use App\Domain\User\UserRepository;
-use App\Domain\User\UserValidator;
 use App\Infrastructure\Persistence\Database;
 use PDO;
 
@@ -40,7 +39,7 @@ class UserRepo extends Database implements UserRepository
 
     public function findUserOfId(int $id): User
     {
-        $query = 'SELECT id, name, role, password, isActive FROM users WHERE id = :id';
+        $query = 'SELECT id, name, role, password, is_active FROM users WHERE id = :id';
 
         $stmt = $this->connection->prepare($query);
         $stmt->bindValue('id', $id, PDO::PARAM_INT);
@@ -63,19 +62,18 @@ class UserRepo extends Database implements UserRepository
 
     public function createUser(string $name, string $role, string $password): User
     {
-        $query = 'INSERT INTO users (name, role, password, isActive) VALUE (:name, :role, :password, :isActive)';
+        $query = 'INSERT INTO users (name, role, password, is_active) VALUE (:name, :role, :password, :isActive)';
         $dbConnection = $this->getConnection();
 
         try {
             $stmt = $dbConnection->prepare($query);
-            $stmt->bindValue('name', strtolower($name));
+            $stmt->bindValue('name', $name);
             $stmt->bindValue('role', strtolower($role));
             $stmt->bindValue('password', $password);
             $stmt->bindValue('isActive', true);
             $stmt->execute();
 
             $userId = $dbConnection->lastInsertId();
-
         } catch (\PDOException $e) {
             throw new UserNoAuthorizationException($e->getMessage());
         }
@@ -89,29 +87,23 @@ class UserRepo extends Database implements UserRepository
         );
     }
 
-    public function updateUser(int $id, string $token = null, string $name = null, string $role = null, bool $isActive = null) :array
+    public function updateUser(int $id, string $token = null, string $name = null, string $role = null, bool $is_active = null) :array
     {
         if (!isset($token)) {
             throw new UserNoAuthorizationException('You need to pass the token to make the operation');
-        }
-
-        $inputValidation = UserValidator::getInstance()->validateUser($name, $role, $token);
-
-        if (!$inputValidation['hasSuccess']) {
-            throw new UserNoAuthorizationException($inputValidation['message']);
         }
 
         $query = 'UPDATE users SET ';
         $conditionToSelectUser = ' WHERE id = :id AND password = :token';
 
         if (isset($name) && isset($role) && isset($isActive)) {
-            $query .= 'name = :name, role = :role, isActive = :isActive';
+            $query .= 'name = :name, role = :role, is_active = :isActive';
         } elseif (isset($name) && isset($role)) {
             $query .= 'name = :name, role = :role';
         } elseif (isset($name) && isset($isActive)) {
-            $query .= 'name = :name, isActive = :isActive';
+            $query .= 'name = :name, is_active = :isActive';
         } elseif (isset($role) && isset($isActive)) {
-            $query .= 'role = :role, isActive = :isActive';
+            $query .= 'role = :role, is_active = :isActive';
         }
 
         $query .= $conditionToSelectUser;
@@ -142,7 +134,7 @@ class UserRepo extends Database implements UserRepository
             $isActive = false;
         }
 
-        $query = 'UPDATE users SET isActive = :isActive WHERE name = :username ';
+        $query = 'UPDATE users SET is_active = :isActive WHERE name = :username ';
 
         $stmt = $this->connection->prepare($query);
         $stmt->bindValue('isActive', $isActive, PDO::PARAM_BOOL);
@@ -217,30 +209,36 @@ class UserRepo extends Database implements UserRepository
             return $response;
         }
         $response['token'] = $token;
-
         return $response;
     }
 
-    public function getToken(string $username): array
+    public function checkIfUserPasswordIsCorrect(string $username, string $password): void
     {
-        $response = [
-            'token' => "",
-            "hasSuccess" => true
-        ];
+        $query = 'SELECT password FROM users WHERE name = :username';
 
-        $query = 'SELECT t.token FROM tokens t JOIN users u ON u.id = t.user_id WHERE u.name = :username';
-
-        $dbConnection = $this->getConnection();
-
-        $stmt = $dbConnection->prepare($query);
+        $stmt = $this->connection->prepare($query);
         $stmt->bindValue('username', $username);
         $stmt->execute();
 
-        $token = $stmt->fetch();
+        $hashPassword = $stmt->fetch();
 
-        $response['token'] = $token['token'] ?? "";
-        $response['hasSuccess'] = $response['token'] != "";
+        if (!password_verify($password, $hashPassword['password'])) {
+            throw new UserNoAuthorizationException('Login failed.');
+        }
+    }
 
-        return $response;
+    public function checkIfUserExists($username)
+    {
+        $query = "SELECT id FROM users WHERE name = :name";
+
+        $stmt = $this->getConnection()->prepare($query);
+        $stmt->bindValue('name', $username);
+        $stmt->execute();
+        
+        $user = $stmt->fetch();
+
+        if (!$user) {
+            throw new UserNotFoundException('User ' . $username . ' does not exist.');
+        }
     }
 }

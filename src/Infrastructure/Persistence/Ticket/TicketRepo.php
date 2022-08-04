@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Persistence\Ticket;
 
+use App\Domain\Ticket\Exception\TicketCreateException;
 use App\Domain\Ticket\Exception\TicketNotFoundException;
 use App\Domain\Ticket\Ticket;
 use App\Domain\Ticket\TicketRepository;
@@ -13,12 +14,51 @@ class TicketRepo extends Database implements TicketRepository
 
     public function findAll(): array
     {
-        return [];
+        $query = 'SELECT id, name, user_id, is_done, is_active  FROM tickets';
+
+        $stmt = $this->getConnection()->prepare($query);
+        $stmt->execute();
+
+        $tickets = $stmt->fetchAll();
+
+        if(!$tickets) {
+            throw new TicketNotFoundException('No tickets available.');
+        }
+
+        $result = [];
+        foreach ($tickets as $ticket) {
+            $result = new Ticket(
+                $ticket['id'],
+                $ticket['name'],
+                $ticket['user_id'],
+                $ticket['is_done'],
+                $ticket['is_active']
+            );
+        }
+        return $result;
     }
 
-    public function findTicketById(): Ticket
+    public function findTicketById(int $ticketId): Ticket
     {
-        return new Ticket(1, 'test', 1, false);
+        $query = "SELECT id, name, user_id, is_done, is_active FROM tickets WHERE id = :id";
+
+        $stmt = $this->getConnection()->prepare($query);
+        $stmt->bindValue('id', $ticketId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $ticket = $stmt->fetch();
+
+        if (!$ticket) {
+            throw new TicketNotFoundException();
+        }
+
+        return new Ticket(
+            (int) $ticket['id'],
+            $ticket['name'],
+            $ticket['user_id'],
+            $ticket['is_done'],
+            $ticket['is_active']
+        );
     }
 
     public function createTicket(string $ticketName, int $creatorId): Ticket
@@ -31,14 +71,15 @@ class TicketRepo extends Database implements TicketRepository
         $stmt->execute();
 
         if ($stmt->rowCount() == 0) {
-            throw new TicketNotFoundException('Error creating ticket');
+            throw new TicketCreateException();
         }
 
         return new Ticket(
             (int) $this->connection->lastInsertId(),
             $ticketName,
             $creatorId,
-            false
+            false,
+            true
         );
     }
 

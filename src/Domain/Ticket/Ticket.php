@@ -2,23 +2,21 @@
 
 namespace App\Domain\Ticket;
 
-use App\Domain\User\User;
-
 class Ticket implements \JsonSerializable
 {
     private $id;
     private $name;
     private $user;
     private $isDone;
-    private $createdAt;
+    private $isActive;
 
-    public function __construct(int $id, string $name, int $user, bool $isDone)
+    public function __construct(int $id, string $name, int $user, bool $isDone, bool $isActive)
     {
         $this->id = $id;
         $this->name = $name;
         $this->user = $user;
         $this->isDone = $isDone;
-        $this->createdAt = time();
+        $this->isActive = $isActive;
     }
 
 
@@ -37,17 +35,15 @@ class Ticket implements \JsonSerializable
         return $this->user;
     }
 
-    public function isDone(): bool
+    public function getIsDone(): bool
     {
         return $this->isDone;
     }
 
-    public function getCreatedAt()
+    public function getIsActive(): bool
     {
-        return $this->createdAt;
+        return $this->isActive;
     }
-
-
 
     public function jsonSerialize()
     {
@@ -56,6 +52,7 @@ class Ticket implements \JsonSerializable
             'name' => $this->name,
             'user_id' => $this->user,
             'isDone' => $this->isDone,
+            'isActive' => $this->isActive
         ];
     }
 }
