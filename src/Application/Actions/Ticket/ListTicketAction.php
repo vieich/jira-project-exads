@@ -12,7 +12,7 @@ class ListTicketAction extends TicketAction
         $auth_token = $this->getAuthTokenHeader();
 
         $permissionRepo = $this->permissionRepo;
-        $ticketValidator = TicketValidator::getInstance();
+        $ticketValidator = $this->ticketValidator;
 
         $ticketValidator->checkIfHeaderIsMissing($auth_token);
 

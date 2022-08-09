@@ -1,0 +1,168 @@
+openapi: 3.0.0
+info:
+  title: 'My First API'
+  version: '0.1'
+servers:
+  -
+    url: 'https://sandbox.exads.rocks/'
+paths:
+  /users/create:
+    post:
+      tags:
+        - Users
+      description: 'Create user, if success return it'
+      operationId: 9a68786c22cb4cc8fe6ed21e3991042f
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+                role:
+                  type: string
+                password:
+                  type: string
+                confirm_password:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer }
+                  data: { properties: { id: { type: integer }, username: { type: string }, role: { type: string }, isActive: { type: boolean } }, type: object }
+                type: object
+  '/users/delete/{username}':
+    delete:
+      tags:
+        - Users
+      summary: 'Requires Authentication'
+      description: 'Search for an object, if found return it'
+      operationId: 1c2e19c564e31d60aa6446c04e4e3c96
+      parameters:
+        -
+          name: username
+          in: path
+          description: 'username of the user'
+          required: true
+          schema:
+            type: string
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer }
+                  data: { properties: { message: { type: string }, hasSuccess: { type: boolean } }, type: object }
+                type: object
+  /users:
+    get:
+      tags:
+        - Users
+      summary: 'Requires Authentication'
+      description: 'Search for an object, if found return it'
+      operationId: c54f94d6d3373769c1d7cf3dfe97841d
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer }
+                  data: { type: array, items: { properties: { id: { type: integer }, username: { type: string }, role: { type: string }, isActive: { type: boolean } }, type: object } }
+                type: object
+  /users/login:
+    post:
+      tags:
+        - Users
+      description: 'Create user, if success return it'
+      operationId: 029f47144ebf6cbe68a93de7791d5463
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer }
+                  data: { properties: { token: { type: string }, hasSuccess: { type: boolean } }, type: object }
+                type: object
+  '/users/{id}':
+    get:
+      tags:
+        - Users
+      summary: 'Requires Authentication'
+      description: 'Search for an object, if found return it'
+      operationId: dc36fd290dc024d1a13bdc9e8c7c4bc2
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'Id of the user'
+          required: true
+          schema:
+            type: integer
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer }
+                  data: { properties: { id: { type: integer }, username: { type: string }, role: { type: string }, isActive: { type: boolean } }, type: object }
+                type: object
+components:
+  schemas:
+    User:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        role:
+          type: string
+        password:
+          type: string
+        isActive:
+          type: boolean
+      type: object

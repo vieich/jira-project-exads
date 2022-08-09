@@ -4,16 +4,18 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitbc341bb742f94b0c290685855a46abd1
+class ComposerStaticInit8ec8fe5fc14cee9ca9c229dcf0dc4246
 {
     public static $files = array (
         '9b38cf48e83f5d8f60375221cd213eee' => __DIR__ . '/..' . '/phpstan/phpstan/bootstrap.php',
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
+        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
-        '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
+        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '253c157292f75eb38082b5acb06f3f01' => __DIR__ . '/..' . '/nikic/fast-route/src/functions.php',
+        '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
         'b33e3d135e5d9e47d845c576147bda89' => __DIR__ . '/..' . '/php-di/php-di/src/functions.php',
     );
 
@@ -33,6 +35,9 @@ class ComposerStaticInitbc341bb742f94b0c290685855a46abd1
         'S' => 
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
+            'Symfony\\Polyfill\\Ctype\\' => 23,
+            'Symfony\\Component\\Yaml\\' => 23,
+            'Symfony\\Component\\Finder\\' => 25,
             'Slim\\Psr7\\' => 10,
             'Slim\\' => 5,
         ),
@@ -42,6 +47,7 @@ class ComposerStaticInitbc341bb742f94b0c290685855a46abd1
             'Psr\\Http\\Server\\' => 16,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
+            'Psr\\Cache\\' => 10,
             'Prophecy\\PhpUnit\\' => 17,
             'Prophecy\\' => 9,
             'PhpParser\\' => 10,
@@ -51,6 +57,7 @@ class ComposerStaticInitbc341bb742f94b0c290685855a46abd1
         'O' => 
         array (
             'Opis\\Closure\\' => 13,
+            'OpenApi\\' => 8,
         ),
         'M' => 
         array (
@@ -72,6 +79,8 @@ class ComposerStaticInitbc341bb742f94b0c290685855a46abd1
         'D' => 
         array (
             'Doctrine\\Instantiator\\' => 22,
+            'Doctrine\\Common\\Lexer\\' => 22,
+            'Doctrine\\Common\\Annotations\\' => 28,
             'DeepCopy\\' => 9,
             'DI\\' => 3,
         ),
@@ -85,8 +94,8 @@ class ComposerStaticInitbc341bb742f94b0c290685855a46abd1
         'phpDocumentor\\Reflection\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
         ),
         'Webmozart\\Assert\\' => 
         array (
@@ -99,6 +108,18 @@ class ComposerStaticInitbc341bb742f94b0c290685855a46abd1
         'Symfony\\Polyfill\\Php80\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
+        ),
+        'Symfony\\Polyfill\\Ctype\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
+        ),
+        'Symfony\\Component\\Yaml\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/yaml',
+        ),
+        'Symfony\\Component\\Finder\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/finder',
         ),
         'Slim\\Psr7\\' => 
         array (
@@ -119,12 +140,16 @@ class ComposerStaticInitbc341bb742f94b0c290685855a46abd1
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'Psr\\Cache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
         'Prophecy\\PhpUnit\\' => 
         array (
@@ -150,6 +175,10 @@ class ComposerStaticInitbc341bb742f94b0c290685855a46abd1
         array (
             0 => __DIR__ . '/..' . '/opis/closure/src',
         ),
+        'OpenApi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/zircote/swagger-php/src',
+        ),
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
@@ -173,6 +202,14 @@ class ComposerStaticInitbc341bb742f94b0c290685855a46abd1
         'Doctrine\\Instantiator\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
+        ),
+        'Doctrine\\Common\\Lexer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/lexer/lib/Doctrine/Common/Lexer',
+        ),
+        'Doctrine\\Common\\Annotations\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/annotations/lib/Doctrine/Common/Annotations',
         ),
         'DeepCopy\\' => 
         array (
@@ -823,9 +860,9 @@ class ComposerStaticInitbc341bb742f94b0c290685855a46abd1
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitbc341bb742f94b0c290685855a46abd1::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitbc341bb742f94b0c290685855a46abd1::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitbc341bb742f94b0c290685855a46abd1::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit8ec8fe5fc14cee9ca9c229dcf0dc4246::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit8ec8fe5fc14cee9ca9c229dcf0dc4246::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit8ec8fe5fc14cee9ca9c229dcf0dc4246::$classMap;
 
         }, null, ClassLoader::class);
     }

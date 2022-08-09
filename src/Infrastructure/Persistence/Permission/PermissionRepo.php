@@ -94,7 +94,7 @@ class PermissionRepo extends Database
             "hasSuccess" => false
         ];
 
-        $timeOfLife = 5;
+        $timeOfLife = 20;
 
         $query = 'SELECT token FROM tokens WHERE user_id = :user_id AND create_at + INTERVAL ' . $timeOfLife . ' MINUTE > now()';
 

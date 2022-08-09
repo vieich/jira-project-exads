@@ -3,10 +3,10 @@
 namespace App\Application\Actions\Ticket;
 
 use Psr\Http\Message\ResponseInterface as Response;
+use OpenApi\Annotations as OA;
 
 class ViewTicketAction extends TicketAction
 {
-
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
@@ -14,7 +14,7 @@ class ViewTicketAction extends TicketAction
 
         $permissionRepo = $this->permissionRepo;
         $ticketRepo = $this->ticketRepository;
-        $ticketValidator = TicketValidator::getInstance();
+        $ticketValidator = $this->ticketValidator;
 
         $ticketValidator->checkIfHeaderIsMissing($auth_token);
 

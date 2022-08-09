@@ -11,9 +11,11 @@ class DeleteTicketAction extends TicketAction
         $auth_token = $this->getAuthTokenHeader();
         $ticketId = (int) $this->resolveArg('id');
 
+        $ticketValidator = $this->ticketValidator;
         $permissionRepo = $this->permissionRepo;
         $ticketRepo = $this->ticketRepository;
 
+        $ticketValidator->checkIfHeaderIsMissing($auth_token);
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);
         $permissionRepo->checkIfUserCanDoOperation($auth_token, 'delete');
 

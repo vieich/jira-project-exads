@@ -8,16 +8,6 @@ use App\Domain\Ticket\Exception\TicketPayloadStructureException;
 
 class TicketValidator
 {
-    private static $instance;
-
-    public static function getInstance(): TicketValidator
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
-
     public function checkIfTicketNameIsValid($ticketName): void
     {
         if (!preg_match("/^[A-Za-z]{2,12}$/", $ticketName)) {

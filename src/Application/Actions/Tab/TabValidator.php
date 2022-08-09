@@ -8,16 +8,6 @@ use App\Domain\Tab\Exception\TabPayloadStructureException;
 
 class TabValidator
 {
-    private static $instance;
-
-    public static function getInstance(): TabValidator
-    {
-        if(!isset(self::$instance)) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
-
     public function checkIfHeaderIsMissing(string $header): void
     {
         if($header == "") {
@@ -36,7 +26,7 @@ class TabValidator
 
     public function checkIfTabNameIsValid($tabName): void
     {
-        if (!preg_match("/^[A-Za-z]{2,8}$/", $tabName)) {
+        if (!preg_match("/^[A-Za-z0-9 ]{2,8}$/", $tabName)) {
             throw new TabNameFormatException();
         }
     }

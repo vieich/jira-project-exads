@@ -3,6 +3,8 @@
 namespace App\Application\Actions\Tab;
 
 use Psr\Http\Message\ResponseInterface as Response;
+use OpenApi\Annotations as OA;
+
 
 class CreateTabAction extends TabAction
 {
@@ -17,7 +19,7 @@ class CreateTabAction extends TabAction
 
         $args = compact('name', 'ticket_id');
 
-        $tabValidator = TabValidator::getInstance();
+        $tabValidator = $this->tabValidator;
         $tabRepo = $this->tabRepository;
         $permissonRepo = $this->permissionRepository;
 

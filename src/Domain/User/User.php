@@ -51,7 +51,7 @@ class User implements JsonSerializable
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'username' => $this->name,
             'role' => $this->role,
             'isActive' => $this->isActive
         ];

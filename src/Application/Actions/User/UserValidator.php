@@ -9,16 +9,6 @@ use App\Domain\User\Exception\UserUsernameFormatException;
 
 class UserValidator
 {
-    private static $instance;
-
-    public static function getInstance(): UserValidator
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
-
     public function checkIfPayloadIsValid(array $args): void
     {
         foreach ($args as $key => $value) {

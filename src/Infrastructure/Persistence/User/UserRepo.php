@@ -13,7 +13,7 @@ class UserRepo extends Database implements UserRepository
 {
     public function findAll(): array
     {
-        $query = 'SELECT id, name, role, isActive, password FROM users';
+        $query = 'SELECT id, name, role, is_active, password FROM users';
 
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
@@ -30,7 +30,7 @@ class UserRepo extends Database implements UserRepository
                 $user['id'],
                 $user['name'],
                 $user['role'],
-                $user['isActive'],
+                $user['is_active'],
                 $user['password']
             );
         }
@@ -55,7 +55,7 @@ class UserRepo extends Database implements UserRepository
             $user['id'],
             $user['name'],
             $user['role'],
-            $user['isActive'],
+            $user['is_active'],
             $user['password']
         );
     }
@@ -164,8 +164,8 @@ class UserRepo extends Database implements UserRepository
         }
 
         return [
+            'message' => $username . ' deleted',
             'hasSuccess' => true,
-            'message' => $username . ' deleted'
         ];
     }
 

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
-use App\Domain\DomainException\DomainCreationException;
+use App\Domain\DomainException\DomainOperationException;
 use App\Domain\DomainException\DomainPayloadDataValidatorException;
 use App\Domain\DomainException\DomainPayloadStructureValidatorException;
 use App\Domain\DomainException\DomainRecordNotFoundException;
@@ -15,12 +15,29 @@ use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Info(title="My First API", version="0.1"),
+ * @OA\Server(url="https://sandbox.exads.rocks/")
+ */
 abstract class Action
 {
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
+    /**
+     * @var Request
+     */
     protected $request;
+    /**
+     * @var Response
+     */
     protected $response;
+    /**
+     * @var array
+     */
     protected $args;
 
     public function __construct(LoggerInterface $logger)
@@ -48,7 +65,7 @@ abstract class Action
             throw new HttpBadRequestException($this->request, $e->getMessage());
         } catch (DomainPayloadDataValidatorException $e) {
             throw new HttpBadRequestException($this->request, $e->getMessage());
-        } catch (DomainCreationException $e) {
+        } catch (DomainOperationException $e) {
             throw new HttpInternalServerErrorException($this->request, $e->getMessage());
         }
     }

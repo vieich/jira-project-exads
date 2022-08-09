@@ -11,11 +11,13 @@ abstract class TabAction extends Action
 {
     protected $tabRepository;
     protected $permissionRepository;
+    protected $tabValidator;
 
-    public function __construct(LoggerInterface $logger, TabRepository $tabRepository, PermissionRepo $permissionRepo)
+    public function __construct(LoggerInterface $logger, TabRepository $tabRepository, PermissionRepo $permissionRepo, TabValidator $tabValidator)
     {
         parent::__construct($logger);
         $this->tabRepository = $tabRepository;
         $this->permissionRepository = $permissionRepo;
+        $this->tabValidator = $tabValidator;
     }
 }

@@ -14,7 +14,7 @@ class TicketRepo extends Database implements TicketRepository
 
     public function findAll(): array
     {
-        $query = 'SELECT id, name, user_id, is_done, is_active  FROM tickets';
+        $query = 'SELECT id, name, user_id, is_active  FROM tickets';
 
         $stmt = $this->getConnection()->prepare($query);
         $stmt->execute();
@@ -27,11 +27,10 @@ class TicketRepo extends Database implements TicketRepository
 
         $result = [];
         foreach ($tickets as $ticket) {
-            $result = new Ticket(
-                $ticket['id'],
+            $result[] = new Ticket(
+                (int) $ticket['id'],
                 $ticket['name'],
                 $ticket['user_id'],
-                $ticket['is_done'],
                 $ticket['is_active']
             );
         }
@@ -40,7 +39,7 @@ class TicketRepo extends Database implements TicketRepository
 
     public function findTicketById(int $ticketId): Ticket
     {
-        $query = "SELECT id, name, user_id, is_done, is_active FROM tickets WHERE id = :id";
+        $query = "SELECT id, name, user_id, is_active FROM tickets WHERE id = :id";
 
         $stmt = $this->getConnection()->prepare($query);
         $stmt->bindValue('id', $ticketId, PDO::PARAM_INT);
@@ -56,7 +55,6 @@ class TicketRepo extends Database implements TicketRepository
             (int) $ticket['id'],
             $ticket['name'],
             $ticket['user_id'],
-            $ticket['is_done'],
             $ticket['is_active']
         );
     }
@@ -78,7 +76,6 @@ class TicketRepo extends Database implements TicketRepository
             (int) $this->connection->lastInsertId(),
             $ticketName,
             $creatorId,
-            false,
             true
         );
     }

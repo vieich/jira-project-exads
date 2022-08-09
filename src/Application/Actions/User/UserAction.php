@@ -12,11 +12,13 @@ abstract class UserAction extends Action
 {
     protected $userRepository;
     protected $permissionRepo;
+    protected $userValidator;
 
-    public function __construct(LoggerInterface $logger, UserRepository $userRepository, PermissionRepo $permissionRepo)
+    public function __construct(LoggerInterface $logger, UserRepository $userRepository, PermissionRepo $permissionRepo, UserValidator $userValidator)
     {
         parent::__construct($logger);
         $this->userRepository = $userRepository;
         $this->permissionRepo = $permissionRepo;
+        $this->userValidator = $userValidator;
     }
 }

@@ -7,15 +7,13 @@ class Ticket implements \JsonSerializable
     private $id;
     private $name;
     private $user;
-    private $isDone;
     private $isActive;
 
-    public function __construct(int $id, string $name, int $user, bool $isDone, bool $isActive)
+    public function __construct(int $id, string $name, int $user, bool $isActive)
     {
         $this->id = $id;
         $this->name = $name;
         $this->user = $user;
-        $this->isDone = $isDone;
         $this->isActive = $isActive;
     }
 
@@ -35,11 +33,6 @@ class Ticket implements \JsonSerializable
         return $this->user;
     }
 
-    public function getIsDone(): bool
-    {
-        return $this->isDone;
-    }
-
     public function getIsActive(): bool
     {
         return $this->isActive;
@@ -51,7 +44,6 @@ class Ticket implements \JsonSerializable
             'id' => $this->id,
             'name' => $this->name,
             'user_id' => $this->user,
-            'isDone' => $this->isDone,
             'isActive' => $this->isActive
         ];
     }

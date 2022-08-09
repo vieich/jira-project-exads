@@ -15,7 +15,7 @@ class CreateTicketAction extends TicketAction
 
         $args = compact('ticket_name');
 
-        $ticketValidator = TicketValidator::getInstance();
+        $ticketValidator = $this->ticketValidator;
         $ticketRepo = $this->ticketRepository;
         $permissionRepo = $this->permissionRepo;
 

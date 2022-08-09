@@ -6,6 +6,35 @@ use Psr\Http\Message\ResponseInterface as Response;
 
 class CreateUserAction extends UserAction
 {
+    /**
+     * @OA\Post(
+     *     path="/users/create",
+     *     tags= {"Users"},
+     *     description="Create user, if success return it",
+     *     @OA\RequestBody (
+     *          @OA\JsonContent(
+     *               type = "object",
+     *               @OA\Property (property="username", type="string"),
+     *               @OA\Property (property="role", type="string"),
+     *               @OA\Property (property="password", type="string"),
+     *               @OA\Property (property="confirm_password", type="string")
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="ok",
+     *          @OA\JsonContent(type = "object",
+     *               @OA\Property (property="statusCode", type="integer"),
+     *               @OA\Property (property="data", type="object",
+     *                      @OA\Property (property="id", type="integer"),
+     *                      @OA\Property (property="username", type="string"),
+     *                      @OA\Property (property="role", type="string"),
+     *                      @OA\Property (property="isActive", type="boolean")
+     *                      )
+     *          )
+     *     )
+     * )
+     */
     protected function action(): Response
     {
         $data = $this->getFormData();
@@ -16,7 +45,7 @@ class CreateUserAction extends UserAction
 
         $args = compact('username', 'role', 'password', 'confirm_password');
 
-        $userValidator = UserValidator::getInstance();
+        $userValidator = $this->userValidator;
 
         $userValidator->checkIfPayloadIsValid($args);
         $userValidator->checkIfUsernameIsValid($username);

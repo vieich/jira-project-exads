@@ -17,7 +17,7 @@ class UpdateTicketAction extends TicketAction
 
         $valuesToUpdate = compact('name');
 
-        $ticketValidator = TicketValidator::getInstance();
+        $ticketValidator = $this->ticketValidator;
         $ticketRepo = $this->ticketRepository;
         $permissionRepo = $this->permissionRepo;
 
