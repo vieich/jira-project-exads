@@ -31,7 +31,7 @@ class TicketValidator
 
     public function checkIfHeaderIsMissing(string $header): void
     {
-        if($header == "") {
+        if ($header == "") {
             throw new TicketNoAuthorizationException('Auth-Token is missing on the header.');
         }
     }

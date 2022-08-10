@@ -20,21 +20,21 @@ class ItemValidator
     {
         foreach ($args as $key => $value) {
             if (!isset($value) || $value == "") {
-                throw new ItemPayloadStructureException('Payload is not valid, is missing the ' . $key . ' field');
+                throw new ItemPayloadStructureException('Payload is not valid, is missing the name or statusName field');
             }
         }
     }
 
-    public function checkIfItemNameIsValid($tabName): void
+    public function checkIfItemNameIsValid($itemName): void
     {
-        if (!preg_match("/^[A-Za-z0-9 ]{2,8}$/", $tabName)) {
-            throw new ItemNameFormatException();
+        if (!preg_match("/^[A-Za-z0-9 ]{2,15}$/", $itemName)) {
+            throw new ItemNameFormatException('Name format');
         }
     }
 
     public function checkIfSectionIdIsValid($sectionId): void
     {
-        if(!is_int($sectionId)) {
+        if (!is_int($sectionId)) {
             throw new ItemSectionIdFormatException();
         }
     }

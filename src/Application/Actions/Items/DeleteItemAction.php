@@ -4,26 +4,22 @@ namespace App\Application\Actions\Items;
 
 use Psr\Http\Message\ResponseInterface as Response;
 
-class ViewItemAction extends ItemAction
+class DeleteItemAction extends ItemAction
 {
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
-        $itemId = (int) $this->resolveArg('id');
+        $sectionId = (int) $this->resolveArg('id');
 
         $permissionRepo = $this->permissionRepo;
-        $itemValidator = $this->itemValidator;
         $itemRepo = $this->itemRepository;
+        $itemValidator = $this->itemValidator;
 
         $itemValidator->checkIfHeaderIsMissing($auth_token);
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'read');
+        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'delete');
 
-        $item = $itemRepo->findItemById($itemId);
-        return $this->respondWithData($item);
-
-
-
-
+        $action = $itemRepo->deleteItem($sectionId);
+        return $this->respondWithData($action);
     }
 }

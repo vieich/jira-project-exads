@@ -6,7 +6,7 @@ interface ItemRepository
 {
     public function findAll(): array;
     public function findItemById(int $itemId): Item;
-    public function createItem(string $itemName, int $sectionId);
+    public function createItem(string $itemName, int $sectionId): Item;
     public function deleteItem(int $itemId);
-    public function updateItem(string $itemName, int $itemId);
+    public function updateItem(int $itemId, string $name = null, int $statusId = null): Item;
 }

@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Persistence\Permission;
 
+use App\Domain\Item\Exception\ItemStatusException;
 use App\Domain\Permission\Exception\PermissionAuthTokenException;
 use App\Domain\User\Exception\UserNoAuthorizationException;
 use App\Domain\User\Exception\UserNotFoundException;
@@ -57,6 +58,20 @@ class PermissionRepo extends Database
         }
     }
 
+    public function checkIfItemStatusIsValidAndReturnId(string $statusName): int
+    {
+        $query = 'SELECT id FROM status WHERE name = :name';
+        $stmt = $this->getConnection()->prepare($query);
+        $stmt->bindValue('name', $statusName);
+        $stmt->execute();
+
+        $statusId = $stmt->fetch();
+
+        if(!$statusId) {
+            throw new ItemStatusException('The status that you trying to set is wrong, available status : to do, in progress, blocked,skipped,completed');
+        }
+        return $statusId['id'];
+    }
     public function getAuthToken(string $username): array
     {
         $query = 'SELECT t.token FROM tokens t JOIN users u on t.user_id = u.id WHERE u.name = :name';

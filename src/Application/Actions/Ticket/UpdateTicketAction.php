@@ -13,7 +13,6 @@ class UpdateTicketAction extends TicketAction
 
         $data = $this->getFormData();
         $name = $data['name'] ?? null;
-        //$is_done = $data['is_done'] ?? null;
 
         $valuesToUpdate = compact('name');
 

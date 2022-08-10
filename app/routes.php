@@ -1,7 +1,10 @@
 <?php
 declare(strict_types=1);
 
+use App\Application\Actions\Items\CreateItemAction;
+use App\Application\Actions\Items\DeleteItemAction;
 use App\Application\Actions\Items\ListItemAction;
+use App\Application\Actions\Items\UpdateItemAction;
 use App\Application\Actions\Items\ViewItemAction;
 use App\Application\Actions\Section\CreateSectionAction;
 use App\Application\Actions\Section\DeleteSectionAction;
@@ -79,11 +82,11 @@ return function (App $app) {
     });
 
     $app->group('/items', function (Group $group) {
-        $group->post('', CreateSectionAction::class);
+        $group->post('', CreateItemAction::class);
         $group->get('', ListItemAction::class);
         $group->get('/{id}', ViewItemAction::class);
-        $group->delete('/{id}', DeleteSectionAction::class);
-        $group->patch('/{id}', UpdateSectionAction::class);
+        $group->delete('/{id}', DeleteItemAction::class);
+        $group->patch('/{id}', UpdateItemAction::class);
     });
 
 };
