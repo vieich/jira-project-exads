@@ -40,6 +40,39 @@ class ViewUserAction extends UserAction
      *                      @OA\Property (property="isActive", type="boolean")
      *                      )
      *              )
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          description="ok",
+     *          @OA\JsonContent(type = "object",
+     *               @OA\Property (property="statusCode", type="integer", example = 401),
+     *               @OA\Property (property="error", type="object",
+     *                      @OA\Property (property="type", type="string", example = "UNAUTHENTICATED"),
+     *                      @OA\Property (property="description", type="string", example = "Log in to get an valid auth token.")
+     *                      )
+     *          )
+     *     ),
+     *      @OA\Response(
+     *          response="403",
+     *          description="ok",
+     *          @OA\JsonContent(type = "object",
+     *               @OA\Property (property="statusCode", type="integer", example = 403),
+     *               @OA\Property (property="error", type="object",
+     *                      @OA\Property (property="type", type="string", example = "INSUFFICIENT_PRIVILEGES"),
+     *                      @OA\Property (property="description", type="string", example = "Auth-Token is missing on the header.")
+     *                      )
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response="404",
+     *          description="ok",
+     *          @OA\JsonContent(type = "object",
+     *               @OA\Property (property="statusCode", type="integer", example = 404),
+     *               @OA\Property (property="error", type="object",
+     *                      @OA\Property (property="type", type="string", example = "RESOURCE_NOT_FOUND"),
+     *                      @OA\Property (property="description", type="string", example = "The user you requested does not exist.")
+     *                      )
+     *          )
      *     )
      * )
      */
@@ -50,7 +83,9 @@ class ViewUserAction extends UserAction
 
         $permissionRepo = $this->permissionRepo;
         $userRepo = $this->userRepository;
+        $userValidator = $this->userValidator;
 
+        $userValidator->checkIfHeaderIsMissing($auth_token);
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);
         $permissionRepo->checkIfUserCanDoOperation($auth_token, 'read');
 

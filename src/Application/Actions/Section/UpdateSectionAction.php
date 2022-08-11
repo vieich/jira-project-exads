@@ -25,7 +25,7 @@ class UpdateSectionAction extends SectionAction
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);
         $permissionRepo->checkIfUserCanDoOperation($auth_token, 'update');
 
-        $sectionValidator->checkIfPayloadFormatIsValid($args);
+        $sectionValidator->checkIfPayloadStructureIsValid($args);
         $sectionValidator->checkIfSectionNameIsValid($name);
 
         $action = $sectionRepo->updateSection($sectionId, $name);

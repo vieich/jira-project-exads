@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Application\Actions;
 
+use App\Domain\DomainException\DomainCredentialsException;
+use App\Domain\DomainException\DomainDataFormatException;
 use App\Domain\DomainException\DomainOperationException;
 use App\Domain\DomainException\DomainPayloadDataValidatorException;
 use App\Domain\DomainException\DomainPayloadStructureValidatorException;
@@ -16,6 +18,7 @@ use Slim\Exception\HttpForbiddenException;
 use Slim\Exception\HttpInternalServerErrorException;
 use Slim\Exception\HttpNotFoundException;
 use OpenApi\Annotations as OA;
+use Slim\Exception\HttpUnauthorizedException;
 
 /**
  * @OA\Info(title="My First API", version="0.1"),
@@ -63,10 +66,12 @@ abstract class Action
             throw new HttpForbiddenException($this->request, $e->getMessage());
         } catch (DomainPayloadStructureValidatorException $e) {
             throw new HttpBadRequestException($this->request, $e->getMessage());
-        } catch (DomainPayloadDataValidatorException $e) {
+        } catch (DomainDataFormatException $e) {
             throw new HttpBadRequestException($this->request, $e->getMessage());
         } catch (DomainOperationException $e) {
             throw new HttpInternalServerErrorException($this->request, $e->getMessage());
+        } catch(DomainCredentialsException $e) {
+            throw new HttpUnauthorizedException($this->request, $e->getMessage());
         }
     }
 

@@ -24,7 +24,7 @@ class CreateItemAction extends ItemAction
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);
         $permissionRepo->checkIfUserCanDoOperation($auth_token, 'create');
 
-        $itemValidator->checkIfPayloadFormatIsValid($args);
+        $itemValidator->checkIfPayloadStructureIsValid($args);
         $itemValidator->checkIfItemNameIsValid($name);
         $itemValidator->checkIfSectionIdIsValid($section_id);
 

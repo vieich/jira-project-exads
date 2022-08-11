@@ -8,7 +8,7 @@ class CreateUserAction extends UserAction
 {
     /**
      * @OA\Post(
-     *     path="/users/create",
+     *     path="/users",
      *     tags= {"Users"},
      *     description="Create user, if success return it",
      *     @OA\RequestBody (
@@ -17,15 +17,18 @@ class CreateUserAction extends UserAction
      *               @OA\Property (property="username", type="string"),
      *               @OA\Property (property="role", type="string"),
      *               @OA\Property (property="password", type="string"),
-     *               @OA\Property (property="confirm_password", type="string")
+     *               @OA\Property (property="confirmPassword", type="string")
      *          )
      *     ),
      *     @OA\Response(
      *          response="200",
      *          description="ok",
-     *          @OA\JsonContent(type = "object",
+     *          @OA\JsonContent(
+     *               required={"statusCode","data"},
+     *               type = "object",
      *               @OA\Property (property="statusCode", type="integer"),
      *               @OA\Property (property="data", type="object",
+     *                      required={"id","username","role","isActive"},
      *                      @OA\Property (property="id", type="integer"),
      *                      @OA\Property (property="username", type="string"),
      *                      @OA\Property (property="role", type="string"),
@@ -41,21 +44,21 @@ class CreateUserAction extends UserAction
         $username = $data['username'] ?? null;
         $role = $data['role'] ?? null;
         $password = $data['password'] ?? null;
-        $confirm_password = $data['confirm_password'] ?? null;
+        $confirmPassword = $data['confirmPassword'] ?? null;
 
-        $args = compact('username', 'role', 'password', 'confirm_password');
+        $args = compact('username', 'role', 'password', 'confirmPassword');
 
         $userValidator = $this->userValidator;
 
-        $userValidator->checkIfPayloadIsValid($args);
+        $userValidator->checkIfPayloadStructureIsValid($args);
         $userValidator->checkIfUsernameIsValid($username);
         $userValidator->checkIfRoleIsValid($role);
         $userValidator->checkIfPasswordFormatIsValid($password);
-        $userValidator->checkIfPasswordAndCPasswordMatch($password, $confirm_password);
+        $userValidator->checkIfPasswordAndCPasswordMatch($password, $confirmPassword);
 
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $user = $this->userRepository->createUser($username, $role, $hashedPassword);
 
+        $user = $this->userRepository->createUser($username, $role, $hashedPassword);
         return $this->respondWithData($user);
     }
 }

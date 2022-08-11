@@ -25,7 +25,7 @@ class CreateSectionAction extends SectionAction
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);
         $permissionRepo->checkIfUserCanDoOperation($auth_token, 'create');
 
-        $sectionValidator->checkIfPayloadFormatIsValid($args);
+        $sectionValidator->checkIfPayloadStructureIsValid($args);
         $sectionValidator->checkIfSectionNameIsValid($name);
         $sectionValidator->checkIfTabIdIsValid($tab_id);
 

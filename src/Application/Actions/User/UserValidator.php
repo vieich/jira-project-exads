@@ -2,22 +2,14 @@
 
 namespace App\Application\Actions\User;
 
+use App\Application\Actions\Validator;
+use App\Domain\User\Exception\UserNoAuthorizationException;
 use App\Domain\User\Exception\UserPasswordFormatException;
-use App\Domain\User\Exception\UserPayloadStructureException;
 use App\Domain\User\Exception\UserRoleException;
 use App\Domain\User\Exception\UserUsernameFormatException;
 
-class UserValidator
+class UserValidator extends Validator
 {
-    public function checkIfPayloadIsValid(array $args): void
-    {
-        foreach ($args as $key => $value) {
-            if (!isset($value) || $value == "") {
-                throw new UserPayloadStructureException('Payload is not valid, is missing the ' . $key . ' field, or its empty');
-            }
-        }
-    }
-
     public function checkIfUsernameIsValid(string $name): void
     {
         /*
@@ -52,4 +44,12 @@ class UserValidator
             throw new UserRoleException();
         }
     }
+
+    public function checkIfUserTokenMatchTheUserId(int $userId, int $userIdByToken): void
+    {
+        if ($userId != $userIdByToken) {
+                throw new UserNoAuthorizationException('The user that you are trying to update is not yours.');
+        }
+    }
+
 }

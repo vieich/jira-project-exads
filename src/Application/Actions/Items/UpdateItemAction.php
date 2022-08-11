@@ -27,7 +27,7 @@ class UpdateItemAction extends ItemAction
 
         if (!$name && !$statusName) {
             $args = compact('name', 'statusName');
-            $itemValidator->checkIfPayloadFormatIsValid($args);
+            $itemValidator->checkIfPayloadStructureIsValid($args);
         }
 
         if ($name) {

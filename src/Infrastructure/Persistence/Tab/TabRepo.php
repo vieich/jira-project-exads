@@ -38,7 +38,7 @@ class TabRepo extends Database implements TabRepository
 
     public function findAll(): array
     {
-        $query = 'SELECT id, name, ticket_id, is_active FROM tabs';
+        $query = 'SELECT id, name, ticket_id, is_active FROM tabs WHERE is_active = true';
 
         $stmt = $this->getConnection()->prepare($query);
         $stmt->execute();
@@ -86,61 +86,28 @@ class TabRepo extends Database implements TabRepository
 
     public function deleteTabById(int $tabId): array
     {
-        try {
-            $queryCheckTab = 'SELECT name FROM tabs WHERE id = :id AND is_active = true';
-            $queryUpdate = "UPDATE tabs SET is_active = false WHERE id = :id";
 
-            $dbConnection = $this->getConnection();
-            $dbConnection->beginTransaction();
+        $this->findTabById($tabId);
 
-            $stmt = $dbConnection->prepare($queryCheckTab);
-            $stmt->bindValue('id', $tabId, PDO::PARAM_INT);
-            $stmt->execute();
+        $queryUpdate = "UPDATE tabs SET is_active = false WHERE id = :id";
 
-            $tabName = $stmt->fetch();
+        $stmt = $this->getConnection()->prepare($queryUpdate);
+        $stmt->bindValue('id', $tabId, PDO::PARAM_INT);
+        $stmt->execute();
 
-            if (!$tabName) {
-                throw new TabNoFoundException();
-            }
-
-            $stmt = $this->getConnection()->prepare($queryUpdate);
-            $stmt->bindValue('id', $tabId, PDO::PARAM_INT);
-            $stmt->execute();
-
-            if ($stmt->rowCount() == 0) {
-                throw new TabOperationException('Delete tab failed');
-            }
-
-            $dbConnection->commit();
-
-            return [
-                'message' => 'Tab with id ' . $tabId . ' was deleted',
-                'hasSuccess' => true,
-            ];
-        } catch (TabNoFoundException $e) {
-            $dbConnection->rollBack();
-            return [
-                'message' => $e->getMessage(),
-                'hasSuccess' => false,
-            ];
-        } catch (TabOperationException $e) {
-            $dbConnection->rollBack();
-            return [
-                'message' => $e->getMessage(),
-                'hasSuccess' => false,
-            ];
-        } catch (\Exception $e) {
-            $dbConnection->rollBack();
-            return [
-                'message' => $e->getMessage(),
-                'hasSuccess' => false,
-            ];
+        if ($stmt->rowCount() == 0) {
+            throw new TabOperationException('Delete tab failed');
         }
+
+        return [
+            'message' => 'Tab with id ' . $tabId . ' was deleted',
+            'hasSuccess' => true
+        ];
     }
 
     public function updateTab(int $tabId, string $tabName): Tab
     {
-        $this->checkIfTabExist($tabId);
+        $tab = $this->findTabById($tabId);
 
         $query = 'UPDATE tabs SET name = :name WHERE id = :id';
         $stmt = $this->getConnection()->prepare($query);
@@ -148,11 +115,12 @@ class TabRepo extends Database implements TabRepository
         $stmt->bindValue('id', $tabId, PDO::PARAM_INT);
         $stmt->execute();
 
-        if($stmt->rowCount() == 0) {
+        if ($stmt->rowCount() == 0) {
             throw new TabOperationException('Update tab failed.');
         }
 
-        return $this->findTabById($tabId);
+        $tab->setName($tabName);
+        return $tab;
     }
 
     private function checkIfTabExist(int $tabId)

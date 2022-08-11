@@ -10,7 +10,7 @@ class LoginUserAction extends UserAction
      * @OA\Post(
      *     path="/users/login",
      *     tags= {"Users"},
-     *     description="Create user, if success return it",
+     *     description="Log in, if success return token",
      *     @OA\RequestBody (
      *          @OA\JsonContent(
      *               type = "object",
@@ -28,6 +28,28 @@ class LoginUserAction extends UserAction
      *                      @OA\Property (property="hasSuccess", type="boolean")
      *                      )
      *          )
+     *     ),
+     *     @OA\Response(
+     *          response="401",
+     *          description="ok",
+     *          @OA\JsonContent(type = "object",
+     *               @OA\Property (property="statusCode", type="integer", example = 401),
+     *               @OA\Property (property="error", type="object",
+     *                      @OA\Property (property="type", type="string", example = "UNAUTHENTICATED"),
+     *                      @OA\Property (property="description", type="string", example = "Password is wrong.")
+     *                      )
+     *          )
+     *     ),
+     *      @OA\Response(
+     *          response="404",
+     *          description="ok",
+     *          @OA\JsonContent(type = "object",
+     *               @OA\Property (property="statusCode", type="integer", example = 404),
+     *               @OA\Property (property="error", type="object",
+     *                      @OA\Property (property="type", type="string", example = "RESOURCE_NOT_FOUND"),
+     *                      @OA\Property (property="description", type="string", example = "User username does not exist.")
+     *                      )
+     *          )
      *     )
      * )
      */
@@ -43,7 +65,7 @@ class LoginUserAction extends UserAction
         $permissionRepo = $this->permissionRepo;
         $userRepo = $this->userRepository;
 
-        $userValidator->checkIfPayloadIsValid($args);
+        $userValidator->checkIfPayloadStructureIsValid($args);
         $userRepo->checkIfUserExists($username);
         $userRepo->checkIfUserPasswordIsCorrect($username, $password);
 

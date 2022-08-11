@@ -43,7 +43,7 @@ class Ticket implements \JsonSerializable
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'user_id' => $this->user,
+            'userId' => $this->user,
             'isActive' => $this->isActive
         ];
     }

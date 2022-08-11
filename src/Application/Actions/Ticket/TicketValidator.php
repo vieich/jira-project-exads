@@ -2,11 +2,10 @@
 
 namespace App\Application\Actions\Ticket;
 
+use App\Application\Actions\Validator;
 use App\Domain\Ticket\Exception\TicketNameFormatException;
-use App\Domain\Ticket\Exception\TicketNoAuthorizationException;
-use App\Domain\Ticket\Exception\TicketPayloadStructureException;
 
-class TicketValidator
+class TicketValidator extends Validator
 {
     public function checkIfTicketNameIsValid($ticketName): void
     {
@@ -15,24 +14,4 @@ class TicketValidator
         }
     }
 
-    public function isDoneValid($ticketIsDone): bool
-    {
-        return is_bool($ticketIsDone);
-    }
-
-    public function checkIfPayloadFormatIsValid(array $args): void
-    {
-        foreach ($args as $key => $value) {
-            if (!isset($value) || $value == "") {
-                throw new TicketPayloadStructureException('Payload is not valid, is missing the ' . $key . ' field');
-            }
-        }
-    }
-
-    public function checkIfHeaderIsMissing(string $header): void
-    {
-        if ($header == "") {
-            throw new TicketNoAuthorizationException('Auth-Token is missing on the header.');
-        }
-    }
 }

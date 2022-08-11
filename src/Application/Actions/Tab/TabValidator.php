@@ -2,27 +2,11 @@
 
 namespace App\Application\Actions\Tab;
 
+use App\Application\Actions\Validator;
 use App\Domain\Tab\Exception\TabNameFormatException;
-use App\Domain\Tab\Exception\TabNoAuthorizationException;
-use App\Domain\Tab\Exception\TabPayloadStructureException;
 
-class TabValidator
+class TabValidator extends Validator
 {
-    public function checkIfHeaderIsMissing(string $header): void
-    {
-        if($header == "") {
-            throw new TabNoAuthorizationException('Auth-Token is missing on the header.');
-        }
-    }
-
-    public function checkIfPayloadFormatIsValid(array $args): void
-    {
-        foreach ($args as $key => $value) {
-            if (!isset($value) || $value == "") {
-                throw new TabPayloadStructureException('Payload is not valid, is missing the ' . $key . ' field');
-            }
-        }
-    }
 
     public function checkIfTabNameIsValid($tabName): void
     {

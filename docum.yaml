@@ -6,51 +6,14 @@ servers:
   -
     url: 'https://sandbox.exads.rocks/'
 paths:
-  /users/create:
-    post:
+  /tabs:
+    get:
       tags:
-        - Users
-      description: 'Create user, if success return it'
-      operationId: 9a68786c22cb4cc8fe6ed21e3991042f
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                username:
-                  type: string
-                role:
-                  type: string
-                password:
-                  type: string
-                confirm_password:
-                  type: string
-              type: object
-      responses:
-        '200':
-          description: ok
-          content:
-            application/json:
-              schema:
-                properties:
-                  statusCode: { type: integer }
-                  data: { properties: { id: { type: integer }, username: { type: string }, role: { type: string }, isActive: { type: boolean } }, type: object }
-                type: object
-  '/users/delete/{username}':
-    delete:
-      tags:
-        - Users
+        - Tabs
       summary: 'Requires Authentication'
-      description: 'Search for an object, if found return it'
-      operationId: 1c2e19c564e31d60aa6446c04e4e3c96
+      description: 'Search for all Tabs, if found return it'
+      operationId: 0a8c46e4a12e68a93e5d13ac4ae2759b
       parameters:
-        -
-          name: username
-          in: path
-          description: 'username of the user'
-          required: true
-          schema:
-            type: string
         -
           name: Auth-Token
           in: header
@@ -66,7 +29,575 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer }
-                  data: { properties: { message: { type: string }, hasSuccess: { type: boolean } }, type: object }
+                  data: { type: array, items: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: TicketName }, ticketId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object } }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+    post:
+      tags:
+        - Tabs
+      summary: 'Requires Authentication'
+      description: 'Create a Tab, if success return it'
+      operationId: c688816d9971c58542c6c0c3ee81b854
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                tabName:
+                  type: string
+                  example: Tab
+                ticketId:
+                  type: integer
+                  example: 1
+              type: object
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: TicketName }, ticketId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                type: object
+        '400':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 400 }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the tabName field.' } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+  '/tabs/{id}':
+    get:
+      tags:
+        - Tabs
+      summary: 'Requires Authentication'
+      description: 'Search for specific Tab by id, if found return it'
+      operationId: d5c8dfea0aa54349cb6e16ea14b66c30
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: id
+          in: path
+          description: 'Id of the ticket'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: TicketName }, ticketId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The Tab does not exist.' } }, type: object }
+                type: object
+    delete:
+      tags:
+        - Tabs
+      summary: 'Requires Authentication'
+      description: 'Delete a Tab, if success return it'
+      operationId: 1acd1b5577c29006cb01f6ee02e2cb8d
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: id
+          in: path
+          description: 'Id of the tab'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { message: { type: string, example: 'Tab with id 5 deleted' }, hasSuccess: { type: boolean, example: true } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The tab does not exist.' } }, type: object }
+                type: object
+  '/tab/{id}':
+    patch:
+      tags:
+        - Tabs
+      summary: 'Requires Authentication'
+      description: 'Update a tab, if success return it'
+      operationId: 0a95d3aa6265d18fffc84dba0fe15c63
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: id
+          in: path
+          description: 'Id of the ticket'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                tabName:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: TicketName }, ticketId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                type: object
+        '400':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 400 }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the ticketName field.' } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The tab does not exist.' } }, type: object }
+                type: object
+  /tickets:
+    get:
+      tags:
+        - Tickets
+      summary: 'Requires Authentication'
+      description: 'Search for all Tickets, if found return it'
+      operationId: 582451cdb79d3a0565221acee4e5cd25
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer }
+                  data: { type: array, items: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: TicketName }, userId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object } }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+    post:
+      tags:
+        - Tickets
+      summary: 'Requires Authentication'
+      description: 'Create a ticket, if success return it'
+      operationId: e1688fdf0fe222b4c77f2cc85334f2f4
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ticketName:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: TicketName }, userId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                type: object
+        '400':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 400 }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the ticketName field.' } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+  '/tickets/{id}':
+    get:
+      tags:
+        - Tickets
+      summary: 'Requires Authentication'
+      description: 'Search for specific Ticket by id, if found return it'
+      operationId: 85d40419917247e9c9dde18d6720d248
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: id
+          in: path
+          description: 'Id of the ticket'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: TicketName }, userId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The ticket does not exist.' } }, type: object }
+                type: object
+    delete:
+      tags:
+        - Tickets
+      summary: 'Requires Authentication'
+      description: 'Delete a ticket, if success return it'
+      operationId: e8502761d036f914e66a8f73c644702b
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: id
+          in: path
+          description: 'Id of the ticket'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { message: { type: string, example: 'Ticket with id 5 deleted' }, hasSuccess: { type: boolean, example: true } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The ticket does not exist.' } }, type: object }
+                type: object
+    patch:
+      tags:
+        - Tickets
+      summary: 'Requires Authentication'
+      description: 'Update a ticket, if success return it'
+      operationId: 02a46c9956b32b10e4638ef588914135
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: id
+          in: path
+          description: 'Id of the ticket'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                ticketName:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: TicketName }, userId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                type: object
+        '400':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 400 }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the ticketName field.' } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The ticket does not exist.' } }, type: object }
                 type: object
   /users:
     get:
@@ -93,11 +624,129 @@ paths:
                   statusCode: { type: integer }
                   data: { type: array, items: { properties: { id: { type: integer }, username: { type: string }, role: { type: string }, isActive: { type: boolean } }, type: object } }
                 type: object
-  /users/login:
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
     post:
       tags:
         - Users
       description: 'Create user, if success return it'
+      operationId: 8dad1c4d10997f2e659a3210d23a7fee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+                role:
+                  type: string
+                password:
+                  type: string
+                confirmPassword:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                required:
+                  - statusCode
+                  - data
+                properties:
+                  statusCode: { type: integer }
+                  data: { required: [id, username, role, isActive], properties: { id: { type: integer }, username: { type: string }, role: { type: string }, isActive: { type: boolean } }, type: object }
+                type: object
+  '/users/{username}':
+    delete:
+      tags:
+        - Users
+      summary: 'Requires Authentication'
+      description: 'Search for an object, if found return it'
+      operationId: ae2ed0bf4a32749706bdcbbbe2a3f229
+      parameters:
+        -
+          name: username
+          in: path
+          description: 'username of the user'
+          required: true
+          schema:
+            type: string
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { message: { type: string, example: 'vitor deleted' }, hasSuccess: { type: boolean, example: true } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '405':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: NOT_ALLOWED }, description: { type: string, example: 'Method not allowed. Must be one of: GET, OPTIONS' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'User username does not exist.' } }, type: object }
+                type: object
+  /users/login:
+    post:
+      tags:
+        - Users
+      description: 'Log in, if success return token'
       operationId: 029f47144ebf6cbe68a93de7791d5463
       requestBody:
         content:
@@ -118,6 +767,24 @@ paths:
                 properties:
                   statusCode: { type: integer }
                   data: { properties: { token: { type: string }, hasSuccess: { type: boolean } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Password is wrong.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'User username does not exist.' } }, type: object }
                 type: object
   '/users/{id}':
     get:
@@ -151,18 +818,30 @@ paths:
                   statusCode: { type: integer }
                   data: { properties: { id: { type: integer }, username: { type: string }, role: { type: string }, isActive: { type: boolean } }, type: object }
                 type: object
-components:
-  schemas:
-    User:
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        role:
-          type: string
-        password:
-          type: string
-        isActive:
-          type: boolean
-      type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The user you requested does not exist.' } }, type: object }
+                type: object

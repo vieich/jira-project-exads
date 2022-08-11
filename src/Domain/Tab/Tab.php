@@ -27,6 +27,11 @@ class Tab implements \JsonSerializable
         return $this->name;
     }
 
+    public function setName(string $tabName): void
+    {
+        $this->name = $tabName;
+    }
+
     public function getTicketId(): int
     {
         return $this->ticket_id;

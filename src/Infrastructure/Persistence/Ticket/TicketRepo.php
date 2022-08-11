@@ -4,6 +4,7 @@ namespace App\Infrastructure\Persistence\Ticket;
 
 use App\Domain\Ticket\Exception\TicketCreateException;
 use App\Domain\Ticket\Exception\TicketNotFoundException;
+use App\Domain\Ticket\Exception\TicketOperationException;
 use App\Domain\Ticket\Ticket;
 use App\Domain\Ticket\TicketRepository;
 use App\Infrastructure\Persistence\Database;
@@ -21,7 +22,7 @@ class TicketRepo extends Database implements TicketRepository
 
         $tickets = $stmt->fetchAll();
 
-        if(!$tickets) {
+        if (!$tickets) {
             throw new TicketNotFoundException('No tickets available.');
         }
 
@@ -80,7 +81,7 @@ class TicketRepo extends Database implements TicketRepository
         );
     }
 
-    public function deleteTicket(int $ticketId)
+    public function deleteTicket(int $ticketId): array
     {
         $query = 'DELETE FROM tickets WHERE id = :id';
 
@@ -98,9 +99,25 @@ class TicketRepo extends Database implements TicketRepository
         ];
     }
 
-    public function updateTicket(int $ticketId, array $valuesToUpdate)
+    public function updateTicket(int $ticketId, string $ticketName): Ticket
     {
-        $name = array_key_exists('name', $valuesToUpdate) ? $valuesToUpdate['name'] : null;
-        $isDone = array_key_exists('isDone', $valuesToUpdate) ? $valuesToUpdate['isDone'] : null;
+        $ticket = $this->findTicketById($ticketId);
+
+        $query = 'UPDATE tickets SET name = :name WHERE id = :id';
+        $stmt = $this->getConnection()->prepare($query);
+        $stmt->bindValue('name', $ticketName);
+        $stmt->bindValue('id', $ticketId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        if ($stmt->rowCount() == 0) {
+            throw new TicketOperationException('Failed updating ticket.');
+        }
+
+        return new Ticket(
+            $ticketId,
+            $ticketName,
+            $ticket->getUser(),
+            $ticket->getIsActive()
+        );
     }
 }

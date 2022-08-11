@@ -27,7 +27,8 @@ use App\Application\Actions\User\CreateUserAction;
 use App\Application\Actions\User\DeleteUserAction;
 use App\Application\Actions\User\ListUsersAction;
 use App\Application\Actions\User\LoginUserAction;
-use App\Application\Actions\User\UpdateUserAction;
+use App\Application\Actions\User\UpdateUserPasswordAction;
+use App\Application\Actions\User\UpdateUserUsernameAction;
 use App\Application\Actions\User\ViewUserAction;
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -52,7 +53,8 @@ return function (App $app) {
         $group->get('/', ListUsersAction::class);
         $group->get('/{id}', ViewUserAction::class);
         $group->post('', CreateUserAction::class);
-        $group->patch('/{id}', UpdateUserAction::class);
+        $group->patch('/{id}', UpdateUserUsernameAction::class);
+        $group->patch('/password/{id}', UpdateUserPasswordAction::class);
         $group->delete('/{username}', DeleteUserAction::class);
         $group->post('/login', LoginUserAction::class);
     });

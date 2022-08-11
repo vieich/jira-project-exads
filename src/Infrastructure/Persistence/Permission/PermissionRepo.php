@@ -12,7 +12,6 @@ use PDO;
 
 class PermissionRepo extends Database
 {
-
     public function checkIfUserCanDoOperation(string $token, string $operation): void
     {
         $role = [
@@ -182,7 +181,7 @@ class PermissionRepo extends Database
 
     public function getUserByToken(string $token): User
     {
-        $query = 'SELECT u.id, u.name, u.role, u.password , u.is_active FROM users u JOIN tokens t on u.id = t.user_id WHERE t.token = :token';
+        $query = 'SELECT u.id, u.name, u.role, u.password , u.is_active FROM users u JOIN tokens t on u.id = t.user_id WHERE t.token = :token AND u.is_active = true';
 
         $stmt = $this->getConnection()->prepare($query);
         $stmt->bindValue('token', $token);

@@ -88,7 +88,7 @@ class ItemRepo extends Database implements ItemRepository
 
     public function deleteItem(int $itemId): array
     {
-        $item = $this->findItemById($itemId);
+        $this->findItemById($itemId);
 
         $query = 'UPDATE items SET is_active = false WHERE id = :id';
         $stmt = $this->getConnection()->prepare($query);

@@ -2,29 +2,12 @@
 
 namespace App\Application\Actions\Items;
 
+use App\Application\Actions\Validator;
 use App\Domain\Item\Exception\ItemNameFormatException;
-use App\Domain\Item\Exception\ItemNoAuthorizationException;
-use App\Domain\Item\Exception\ItemPayloadStructureException;
 use App\Domain\Item\Exception\ItemSectionIdFormatException;
 
-class ItemValidator
+class ItemValidator extends Validator
 {
-    public function checkIfHeaderIsMissing(string $header): void
-    {
-        if ($header == "") {
-            throw new ItemNoAuthorizationException('Auth-Token is missing on the header.');
-        }
-    }
-
-    public function checkIfPayloadFormatIsValid(array $args): void
-    {
-        foreach ($args as $key => $value) {
-            if (!isset($value) || $value == "") {
-                throw new ItemPayloadStructureException('Payload is not valid, is missing the name or statusName field');
-            }
-        }
-    }
-
     public function checkIfItemNameIsValid($itemName): void
     {
         if (!preg_match("/^[A-Za-z0-9 ]{2,15}$/", $itemName)) {
