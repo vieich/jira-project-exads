@@ -27,9 +27,9 @@ class UpdateUserPasswordAction extends UserAction
         $userValidator->checkIfUserTokenMatchTheUserId($userId, $userByToken->getId());
 
         $args = compact('oldPassword', 'newPassword');
-        $userValidator->checkIfPayloadIsValid($args);
+        $userValidator->checkIfPayloadStructureIsValid($args);
 
-        if($oldPassword == $newPassword) {
+        if ($oldPassword == $newPassword) {
             throw new UserPayloadDataException('newPassword must be different than the oldPassword');
         }
 

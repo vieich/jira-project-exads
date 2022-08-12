@@ -61,6 +61,8 @@ class ListTicketAction extends TicketAction
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
+        $data = $this->getFormData();
+        $showHistory = $data['showHistory'] ?? false;
 
         $permissionRepo = $this->permissionRepo;
         $ticketValidator = $this->ticketValidator;
@@ -68,9 +70,15 @@ class ListTicketAction extends TicketAction
 
         $ticketValidator->checkIfHeaderIsMissing($auth_token);
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);
+
+        if (isset($showHistory)) {
+            $ticketValidator->checkIfShowHistoryIsValid($showHistory);
+            $permissionRepo->checkIfUserCanDoOperation($auth_token, 'history');
+        }
+
         $permissionRepo->checkIfUserCanDoOperation($auth_token, 'read');
 
-        $tickets = $ticketRepo->findAll();
+        $tickets = $ticketRepo->findAll($showHistory);
         return $this->respondWithData($tickets);
     }
 }

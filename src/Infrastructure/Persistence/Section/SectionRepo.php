@@ -38,7 +38,7 @@ class SectionRepo extends Database implements SectionRepository
 
     public function findAll(): array
     {
-        $query = 'SELECT id, name, tab_id, is_active FROM sections';
+        $query = 'SELECT id, name, tab_id, is_active FROM sections WHERE is_active = true';
         $stmt = $this->getConnection()->prepare($query);
         $stmt->execute();
 
@@ -63,7 +63,7 @@ class SectionRepo extends Database implements SectionRepository
 
     public function findSectionById(int $sectionId): Section
     {
-        $query = 'SELECT id, name, tab_id, is_active FROM sections WHERE id = :id';
+        $query = 'SELECT id, name, tab_id, is_active FROM sections WHERE id = :id AND is_active = true';
         $stmt = $this->getConnection()->prepare($query);
         $stmt->bindValue('id', $sectionId, PDO::PARAM_INT);
         $stmt->execute();
@@ -84,47 +84,22 @@ class SectionRepo extends Database implements SectionRepository
 
     public function deleteSection(int $sectionId): array
     {
-        try {
-            $dbConnection = $this->getConnection();
-            $dbConnection->beginTransaction();
+        $this->findSectionById($sectionId);
 
-            $this->checkIfSectionExists($sectionId);
+        $query = 'UPDATE sections SET is_active = false WHERE id = :id';
 
-            $query = 'UPDATE sections SET is_active = false WHERE id = :id';
+        $stmt = $this->getConnection()->prepare($query);
+        $stmt->bindValue('id', $sectionId, PDO::PARAM_INT);
+        $stmt->execute();
 
-            $stmt = $this->getConnection()->prepare($query);
-            $stmt->bindValue('id', $sectionId, PDO::PARAM_INT);
-            $stmt->execute();
-
-            if ($stmt->rowCount() == 0) {
-                throw new SectionOperationException('Delete section failed.');
-            }
-
-            $dbConnection->commit();
-
-            return [
-                'message' => 'Tab with id ' . $sectionId . ' was deleted',
-                'hasSuccess' => true,
-            ];
-        } catch (SectionNotFoundException $e) {
-            $dbConnection->rollBack();
-            return [
-                'message' => $e->getMessage(),
-                'hasSuccess' => false,
-            ];
-        } catch (SectionOperationException $e) {
-            $dbConnection->rollBack();
-            return [
-                'message' => $e->getMessage(),
-                'hasSuccess' => false,
-            ];
-        } catch (\Exception $e) {
-            $dbConnection->rollBack();
-            return [
-                'message' => $e->getMessage(),
-                'hasSuccess' => false,
-            ];
+        if ($stmt->rowCount() == 0) {
+            throw new SectionOperationException('Delete section failed.');
         }
+
+        return [
+            'message' => 'Section with id ' . $sectionId . ' was deleted',
+            'hasSuccess' => true
+        ];
     }
 
     public function updateSection(int $sectionId, string $sectionName): Section
@@ -160,18 +135,4 @@ class SectionRepo extends Database implements SectionRepository
         }
     }
 
-    private function checkIfSectionExists(int $sectionId)
-    {
-        $query = 'SELECT name FROM sections WHERE id = :id AND is_active = true';
-
-        $stmt = $this->getConnection()->prepare($query);
-        $stmt->bindValue('id', $sectionId, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $section = $stmt->fetch();
-
-        if (!$section) {
-            throw new SectionNotFoundException();
-        }
-    }
 }

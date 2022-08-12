@@ -36,9 +36,13 @@ class TabRepo extends Database implements TabRepository
         );
     }
 
-    public function findAll(): array
+    public function findAll(bool $showHistory): array
     {
-        $query = 'SELECT id, name, ticket_id, is_active FROM tabs WHERE is_active = true';
+        $query = 'SELECT id, name, ticket_id, is_active FROM tabs';
+
+        if(!$showHistory) {
+            $query .= ' WHERE is_active = true';
+        }
 
         $stmt = $this->getConnection()->prepare($query);
         $stmt->execute();
@@ -121,21 +125,6 @@ class TabRepo extends Database implements TabRepository
 
         $tab->setName($tabName);
         return $tab;
-    }
-
-    private function checkIfTabExist(int $tabId)
-    {
-        $query = 'SELECT name FROM tabs WHERE id = :id AND is_active = true';
-
-        $stmt = $this->getConnection()->prepare($query);
-        $stmt->bindValue('id', $tabId, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $tab = $stmt->fetch();
-
-        if (!$tab) {
-            throw new TabNoFoundException();
-        }
     }
 
     private function checkIfParentTicketExist(int $ticketId)

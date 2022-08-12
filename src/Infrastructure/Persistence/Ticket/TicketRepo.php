@@ -5,6 +5,7 @@ namespace App\Infrastructure\Persistence\Ticket;
 use App\Domain\Ticket\Exception\TicketCreateException;
 use App\Domain\Ticket\Exception\TicketNotFoundException;
 use App\Domain\Ticket\Exception\TicketOperationException;
+use App\Domain\Ticket\Exception\TicketPayloadDataException;
 use App\Domain\Ticket\Ticket;
 use App\Domain\Ticket\TicketRepository;
 use App\Infrastructure\Persistence\Database;
@@ -13,9 +14,13 @@ use PDO;
 class TicketRepo extends Database implements TicketRepository
 {
 
-    public function findAll(): array
+    public function findAll(bool $showHistory): array
     {
         $query = 'SELECT id, name, user_id, is_active  FROM tickets';
+
+        if (!$showHistory) {
+            $query .= ' WHERE is_active = true';
+        }
 
         $stmt = $this->getConnection()->prepare($query);
         $stmt->execute();
@@ -40,7 +45,7 @@ class TicketRepo extends Database implements TicketRepository
 
     public function findTicketById(int $ticketId): Ticket
     {
-        $query = "SELECT id, name, user_id, is_active FROM tickets WHERE id = :id";
+        $query = "SELECT id, name, user_id, is_active FROM tickets WHERE id = :id AND is_active = true";
 
         $stmt = $this->getConnection()->prepare($query);
         $stmt->bindValue('id', $ticketId, PDO::PARAM_INT);
@@ -83,14 +88,16 @@ class TicketRepo extends Database implements TicketRepository
 
     public function deleteTicket(int $ticketId): array
     {
-        $query = 'DELETE FROM tickets WHERE id = :id';
+        $this->findTicketById($ticketId);
+
+        $query = 'UPDATE tickets SET is_active = false WHERE id = :id';
 
         $stmt = $this->connection->prepare($query);
         $stmt->bindValue('id', $ticketId, PDO::PARAM_INT);
         $stmt->execute();
 
         if ($stmt->rowCount() == 0) {
-            throw new TicketNotFoundException();
+            throw new TicketOperationException('Failed to delete Ticket with id ' . $ticketId);
         }
 
         return [

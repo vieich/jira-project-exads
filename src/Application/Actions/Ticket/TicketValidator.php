@@ -4,6 +4,7 @@ namespace App\Application\Actions\Ticket;
 
 use App\Application\Actions\Validator;
 use App\Domain\Ticket\Exception\TicketNameFormatException;
+use App\Domain\Ticket\Exception\TicketPayloadDataException;
 
 class TicketValidator extends Validator
 {
@@ -13,5 +14,4 @@ class TicketValidator extends Validator
             throw new TicketNameFormatException();
         }
     }
-
 }

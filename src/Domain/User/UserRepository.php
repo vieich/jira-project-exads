@@ -6,7 +6,7 @@ namespace App\Domain\User;
 interface UserRepository
 {
 
-    public function findAll(): array;
+    public function findAll(bool $showHistory): array;
     public function findUserOfId(int $id): User;
     public function createUser(string $name, string $role, string $password);
     public function updateUserUsername(int $userId, string $username): User;

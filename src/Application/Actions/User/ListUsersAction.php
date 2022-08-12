@@ -62,6 +62,8 @@ class ListUsersAction extends UserAction
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
+        $data = $this->getFormData();
+        $showHistory = $data['showHistory'] ?? false;
 
         $permissionRepo = $this->permissionRepo;
         $userRepo = $this->userRepository;
@@ -69,10 +71,15 @@ class ListUsersAction extends UserAction
 
         $userValidator->checkIfHeaderIsMissing($auth_token);
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);
+
+        if (isset($showHistory)) {
+            $userValidator->checkIfShowHistoryIsValid($showHistory);
+            $permissionRepo->checkIfUserCanDoOperation($auth_token, 'history');
+        }
+
         $permissionRepo->checkIfUserCanDoOperation($auth_token, 'read');
 
-        $users = $userRepo->findAll();
-
+        $users = $userRepo->findAll($showHistory);
         $this->logger->info("Users list was viewed.");
 
         return $this->respondWithData($users);

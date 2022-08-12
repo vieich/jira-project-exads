@@ -22,7 +22,7 @@ class UpdateUserUsernameAction extends UserAction
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);
 
         $args = compact('username');
-        $userValidator->checkIfPayloadIsValid($args);
+        $userValidator->checkIfPayloadStructureIsValid($args);
 
         $userByToken = $permissionRepo->getUserByToken($auth_token);
         $userValidator->checkIfUserTokenMatchTheUserId($userId, $userByToken->getId());

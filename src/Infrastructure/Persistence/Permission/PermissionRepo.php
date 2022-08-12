@@ -18,7 +18,8 @@ class PermissionRepo extends Database
             'read' => ['client', 'admin'],
             'create' => ['admin'],
             'delete' => ['admin'],
-            'update' => ['admin']
+            'update' => ['admin'],
+            'history' => ['admin']
         ];
 
         $query = 'SELECT role FROM users WHERE name = :name';

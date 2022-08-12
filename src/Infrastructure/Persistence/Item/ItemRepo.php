@@ -42,7 +42,7 @@ class ItemRepo extends Database implements ItemRepository
 
     public function findItemById(int $itemId): Item
     {
-        $query = 'SELECT i.id, i.name, i.section_id, i.is_active, s.name as statusName FROM items i JOIN status s on s.id = i.status_id WHERE i.id = :id';
+        $query = 'SELECT i.id, i.name, i.section_id, i.is_active, s.name as statusName FROM items i JOIN status s on s.id = i.status_id WHERE i.id = :id AND is_active = true';
 
         $stmt = $this->getConnection()->prepare($query);
         $stmt->bindValue('id', $itemId, PDO::PARAM_INT);

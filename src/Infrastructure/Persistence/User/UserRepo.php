@@ -12,9 +12,13 @@ use PDO;
 
 class UserRepo extends Database implements UserRepository
 {
-    public function findAll(): array
+    public function findAll(bool $showHistory): array
     {
-        $query = 'SELECT id, name, role, is_active, password FROM users WHERE is_active = true';
+        $query = 'SELECT id, name, role, is_active, password FROM users';
+
+        if (!$showHistory) {
+            $query .= ' WHERE is_active = true';
+        }
 
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
@@ -76,7 +80,7 @@ class UserRepo extends Database implements UserRepository
 
             $userId = $dbConnection->lastInsertId();
         } catch (\PDOException $e) {
-            throw new UserNoAuthorizationException($e->getMessage());
+            throw new UserOperationException('Username already exists');
         }
 
         return new User(
@@ -100,7 +104,7 @@ class UserRepo extends Database implements UserRepository
         $stmt->execute();
 
         if ($stmt->rowCount() == 0) {
-            throw new UserNotFoundException('Failed deleting user with username' . $username);
+            throw new UserOperationException('Failed deleting user with username' . $username);
         }
 
         return [

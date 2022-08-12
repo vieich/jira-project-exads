@@ -61,6 +61,8 @@ class ListTabAction extends TabAction
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
+        $data = $this->getFormData();
+        $showHistory = $data['showHistory'] ?? false;
 
         $permissionRepo = $this->permissionRepository;
         $tabValidator = $this->tabValidator;
@@ -68,9 +70,15 @@ class ListTabAction extends TabAction
 
         $tabValidator->checkIfHeaderIsMissing($auth_token);
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);
+
+        if (isset($showHistory)) {
+            $tabValidator->checkIfShowHistoryIsValid($showHistory);
+            $permissionRepo->checkIfUserCanDoOperation($auth_token, 'history');
+        }
+
         $permissionRepo->checkIfUserCanDoOperation($auth_token, "read");
 
-        $tabs = $tabRepo->findAll();
+        $tabs = $tabRepo->findAll($showHistory);
         return $this->respondWithData($tabs);
     }
 }
