@@ -2,6 +2,7 @@
 
 namespace App\Application\Actions\Ticket;
 
+use App\Domain\Permission\Permission;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class UpdateTicketAction extends TicketAction
@@ -103,11 +104,8 @@ class UpdateTicketAction extends TicketAction
 
         $ticketValidator = $this->ticketValidator;
         $ticketRepo = $this->ticketRepository;
-        $permissionRepo = $this->permissionRepo;
 
-        $ticketValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'update');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, 'update');
 
         $ticketValidator->checkIfPayloadStructureIsValid($valuesToUpdate);
         $ticketValidator->checkIfTicketNameIsValid($ticketName);

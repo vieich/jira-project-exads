@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Actions;
+namespace App\Domain;
 
 use App\Domain\DomainException\DomainDataFormatException;
 use App\Domain\DomainException\DomainPayloadStructureValidatorException;
@@ -8,22 +8,28 @@ use App\Domain\DomainException\DomainRecordWithoutAuthorizationException;
 
 class Validator
 {
+    /**
+     * @param array $args
+     *
+     * @return void
+     *
+     * @throws DomainPayloadStructureValidatorException
+     */
     public function checkIfPayloadStructureIsValid(array $args): void
     {
         foreach ($args as $key => $value) {
             if (!isset($value) || $value == "") {
-                throw new DomainPayloadStructureValidatorException('Payload is not valid, is missing the ' . $key . ' field, or its empty');
+                throw new DomainPayloadStructureValidatorException(
+                    'Payload is not valid, is missing the ' . $key . ' field, or its empty'
+                );
             }
         }
     }
 
-    public function checkIfHeaderIsMissing(string $header): void
-    {
-        if ($header == "") {
-            throw new DomainRecordWithoutAuthorizationException('Auth-Token is missing on the header.');
-        }
-    }
 
+    /**
+     * @throws DomainDataFormatException
+     */
     public function checkIfShowHistoryIsValid($showHistoric): void
     {
         if (!is_bool($showHistoric)) {

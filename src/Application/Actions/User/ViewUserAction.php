@@ -81,7 +81,7 @@ class ViewUserAction extends UserAction
         $auth_token = $this->getAuthTokenHeader();
         $userId = (int) $this->resolveArg('id');
 
-        $permissionRepo = $this->permissionRepo;
+        $permissionRepo = $this->permissionRepository;
         $userRepo = $this->userRepository;
         $userValidator = $this->userValidator;
 

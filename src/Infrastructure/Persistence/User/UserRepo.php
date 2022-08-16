@@ -103,7 +103,7 @@ class UserRepo extends Database implements UserRepository
         $stmt->bindValue('username', $username . 'id' . $user->getId());
         $stmt->execute();
 
-        if ($stmt->rowCount() == 0) {
+        if ($stmt->rowCount() === 0) {
             throw new UserOperationException('Failed deleting user with username' . $username);
         }
 
@@ -162,29 +162,37 @@ class UserRepo extends Database implements UserRepository
         return $response;
     }
 
+    /**
+     * @throws UserNotFoundException
+     * @throws UserNoAuthorizationException
+     */
     public function checkIfUserPasswordIsCorrect(string $username, string $password): void
     {
         $query = 'SELECT password FROM users WHERE name = :username AND is_active = true';
+        try {
+            $stmt = $this->connection->prepare($query);
+                $stmt->bindValue('username', $username);
+                $stmt->execute();
 
-        $stmt = $this->connection->prepare($query);
-        $stmt->bindValue('username', $username);
-        $stmt->execute();
-
-        $hashPassword = $stmt->fetch();
-
+                $hashPassword = $stmt->fetch();
+        } catch (\PDOException $e) {
+            throw new UserNotFoundException('Wrong username or password.');
+        }
         if (!password_verify($password, $hashPassword['password'])) {
-            throw new UserNoAuthorizationException('Password is wrong.');
+            throw new UserNoAuthorizationException('Wrong username or password.');
         }
     }
 
     public function checkIfUserExists($username): User
     {
-        $query = "SELECT id,name,role,is_active,password FROM users WHERE name = :name AND is_active = true";
-
-        $stmt = $this->getConnection()->prepare($query);
-        $stmt->bindValue('name', $username);
-        $stmt->execute();
-        
+        $query = "SELECT id, name, role, is_active, password FROM users WHERE name = :name AND is_active = true";
+        try {
+            $stmt = $this->getConnection()->prepare($query);
+            $stmt->bindValue('name', $username);
+            $stmt->execute();
+        } catch (\PDOException $e) {
+            throw new UserNotFoundException('Usefdsfdsfdkjshfjkdshfr ' . $username . ' does not exist.');
+        }
         $user = $stmt->fetch();
 
         if (!$user) {

@@ -2,6 +2,7 @@
 
 namespace App\Application\Actions\Tab;
 
+use App\Domain\Permission\Permission;
 use Psr\Http\Message\ResponseInterface as Response;
 use OpenApi\Annotations as OA;
 
@@ -89,11 +90,8 @@ class CreateTabAction extends TabAction
 
         $tabValidator = $this->tabValidator;
         $tabRepo = $this->tabRepository;
-        $permissionRepo = $this->permissionRepository;
 
-        $tabValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'create');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, 'create');
 
         $tabValidator->checkIfPayloadStructureIsValid($args);
         $tabValidator->checkIfTabNameIsValid($tabName);

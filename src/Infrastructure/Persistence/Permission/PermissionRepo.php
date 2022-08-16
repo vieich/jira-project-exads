@@ -4,6 +4,7 @@ namespace App\Infrastructure\Persistence\Permission;
 
 use App\Domain\Item\Exception\ItemStatusException;
 use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\User\Exception\UserNoAuthorizationException;
 use App\Domain\User\Exception\UserNotFoundException;
 use App\Domain\User\User;
@@ -12,15 +13,17 @@ use PDO;
 
 class PermissionRepo extends Database
 {
-    public function checkIfUserCanDoOperation(string $token, string $operation): void
+    public function checkIfUserCanDoOperation(string $token, array $operation): void
     {
         $role = [
             'read' => ['client', 'admin'],
             'create' => ['admin'],
             'delete' => ['admin'],
             'update' => ['admin'],
-            'history' => ['admin']
+            'showDeleted' => ['admin'],
+            'updateUser' => ['client', 'admin']
         ];
+
 
         $query = 'SELECT role FROM users WHERE name = :name';
 
@@ -37,9 +40,16 @@ class PermissionRepo extends Database
                 throw new UserNotFoundException('User not found');
             }
 
-            if (!in_array($userRoleFromDb['role'], $role[$operation])) {
+            if (count($operation) > 1) {
+                if ($userRoleFromDb['role'] != 'admin') {
+                    throw new PermissionNoAuthorizationException('You have no permission for this operation');
+                }
+            }
+
+            if (!in_array($userRoleFromDb['role'], $role[$operation[0]])) {
                 throw new UserNoAuthorizationException('You have no permission for this operation');
             }
+
         } catch (\PDOException $e) {
             throw new UserNotFoundException();
         }
@@ -67,7 +77,7 @@ class PermissionRepo extends Database
 
         $statusId = $stmt->fetch();
 
-        if(!$statusId) {
+        if (!$statusId) {
             throw new ItemStatusException('The status that you trying to set is wrong, available status : to do, in progress, blocked,skipped,completed');
         }
         return $statusId['id'];

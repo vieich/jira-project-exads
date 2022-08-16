@@ -2,10 +2,26 @@
 
 namespace App\Application\Actions\Items;
 
+use App\Domain\DomainException\DomainPayloadStructureValidatorException;
+use App\Domain\Item\Exception\ItemNameFormatException;
+use App\Domain\Item\Exception\ItemSectionIdFormatException;
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Permission;
+use App\Domain\User\Exception\UserNoAuthorizationException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class CreateItemAction extends ItemAction
 {
+    /**
+     * @throws ItemSectionIdFormatException
+     * @throws UserNotFoundException
+     * @throws PermissionAuthTokenException
+     * @throws UserNoAuthorizationException
+     * @throws ItemNameFormatException
+     * @throws DomainPayloadStructureValidatorException|PermissionNoAuthorizationException
+     */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
@@ -16,13 +32,10 @@ class CreateItemAction extends ItemAction
 
         $args = compact('name', 'section_id');
 
-        $permissionRepo = $this->permissionRepo;
         $itemValidator = $this->itemValidator;
         $itemRepo = $this->itemRepository;
 
-        $itemValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'create');
+        (new Permission($this->permissionRepo))->checkIfHasAccess($auth_token, 'create');
 
         $itemValidator->checkIfPayloadStructureIsValid($args);
         $itemValidator->checkIfItemNameIsValid($name);

@@ -15,7 +15,7 @@ class UpdateUserUsernameAction extends UserAction
         $username = $data['username'] ?? null;
 
         $userValidator = $this->userValidator;
-        $permissionRepo = $this->permissionRepo;
+        $permissionRepo = $this->permissionRepository;
         $userRepo = $this->userRepository;
 
         $userValidator->checkIfHeaderIsMissing($auth_token);

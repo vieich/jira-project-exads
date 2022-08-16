@@ -2,6 +2,7 @@
 
 namespace App\Application\Actions\Tab;
 
+use App\Domain\Permission\Permission;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class UpdateTabAction extends TabAction
@@ -103,11 +104,8 @@ class UpdateTabAction extends TabAction
 
         $tabValidator = $this->tabValidator;
         $tabRepo = $this->tabRepository;
-        $permissionRepo = $this->permissionRepository;
 
-        $tabValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'update');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, 'update');
 
         $tabValidator->checkIfPayloadStructureIsValid($args);
         $tabValidator->checkIfTabNameIsValid($tabName);

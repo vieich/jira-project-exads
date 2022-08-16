@@ -4,6 +4,7 @@ namespace App\Application\Actions\Tab;
 
 use App\Application\Actions\Action;
 use App\Domain\Tab\TabRepository;
+use App\Domain\Tab\TabValidator;
 use App\Infrastructure\Persistence\Permission\PermissionRepo;
 use Psr\Log\LoggerInterface;
 

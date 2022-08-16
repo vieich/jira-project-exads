@@ -40,7 +40,7 @@ class TabRepo extends Database implements TabRepository
     {
         $query = 'SELECT id, name, ticket_id, is_active FROM tabs';
 
-        if(!$showHistory) {
+        if (!$showHistory) {
             $query .= ' WHERE is_active = true';
         }
 

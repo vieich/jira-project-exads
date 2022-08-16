@@ -2,10 +2,29 @@
 
 namespace App\Application\Actions\Items;
 
+use App\Domain\DomainException\DomainPayloadStructureValidatorException;
+use App\Domain\Item\Exception\ItemNameFormatException;
+use App\Domain\Item\Exception\ItemStatusException;
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
+use App\Domain\Permission\Permission;
+use App\Domain\User\Exception\UserNoAuthorizationException;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpBadRequestException;
 
 class UpdateItemAction extends ItemAction
 {
+    /**
+     * @throws ItemStatusException
+     * @throws UserNotFoundException
+     * @throws PermissionAuthTokenException
+     * @throws UserNoAuthorizationException
+     * @throws PermissionNoAuthorizationException
+     * @throws ItemNameFormatException
+     * @throws HttpBadRequestException
+     * @throws DomainPayloadStructureValidatorException
+     */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
@@ -19,9 +38,7 @@ class UpdateItemAction extends ItemAction
         $itemValidator = $this->itemValidator;
         $itemRepo = $this->itemRepository;
 
-        $itemValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'update');
+        (new Permission($permissionRepo))->checkIfHasAccess($auth_token, 'update');
 
         $statusId = null;
 

@@ -2,6 +2,8 @@
 
 namespace App\Application\Actions\User;
 
+use App\Domain\DomainException\DomainPayloadStructureValidatorException;
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class LoginUserAction extends UserAction
@@ -52,6 +54,8 @@ class LoginUserAction extends UserAction
      *          )
      *     )
      * )
+     * @throws DomainPayloadStructureValidatorException
+     * @throws PermissionAuthTokenException
      */
     protected function action(): Response
     {
@@ -62,14 +66,13 @@ class LoginUserAction extends UserAction
         $args = compact('username', 'password');
 
         $userValidator = $this->userValidator;
-        $permissionRepo = $this->permissionRepo;
         $userRepo = $this->userRepository;
 
         $userValidator->checkIfPayloadStructureIsValid($args);
         $userRepo->checkIfUserExists($username);
         $userRepo->checkIfUserPasswordIsCorrect($username, $password);
 
-        $getAuthToken = $permissionRepo->getAuthToken($username);
+        $getAuthToken = $this->permissionRepository->getAuthToken($username);
 
         return $this->respondWithData($getAuthToken);
     }

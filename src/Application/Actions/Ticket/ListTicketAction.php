@@ -2,6 +2,8 @@
 
 namespace App\Application\Actions\Ticket;
 
+use App\Domain\DomainException\DomainDataFormatException;
+use App\Domain\Permission\Permission;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class ListTicketAction extends TicketAction
@@ -57,28 +59,26 @@ class ListTicketAction extends TicketAction
      *          )
      *     )
      * )
+     * @throws DomainDataFormatException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
         $data = $this->getFormData();
-        $showHistory = $data['showHistory'] ?? false;
+        $showDeleted = $data['showDeleted'] ?? false;
+        $operation = ['read'];
 
-        $permissionRepo = $this->permissionRepo;
         $ticketValidator = $this->ticketValidator;
         $ticketRepo = $this->ticketRepository;
 
-        $ticketValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-
-        if (isset($showHistory)) {
-            $ticketValidator->checkIfShowHistoryIsValid($showHistory);
-            $permissionRepo->checkIfUserCanDoOperation($auth_token, 'history');
+        if ($showDeleted) {
+            $ticketValidator->checkIfShowHistoryIsValid($showDeleted);
+            $operation[] = 'showDeleted';
         }
 
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'read');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
-        $tickets = $ticketRepo->findAll($showHistory);
+        $tickets = $ticketRepo->findAll($showDeleted);
         return $this->respondWithData($tickets);
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Application\Actions\Tab;
+namespace App\Domain\Tab;
 
-use App\Application\Actions\Validator;
 use App\Domain\Tab\Exception\TabNameFormatException;
+use App\Domain\Validator;
 
 class TabValidator extends Validator
 {

@@ -2,7 +2,9 @@
 
 namespace App\Application\Actions\User;
 
+use App\Domain\Permission\Permission;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpBadRequestException;
 
 class DeleteUserAction extends UserAction
 {
@@ -82,20 +84,18 @@ class DeleteUserAction extends UserAction
      *          )
      *     )
      * )
+     * @throws HttpBadRequestException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
+        $operation = ['delete'];
 
         $username = $this->resolveArg('username');
 
-        $userValidator = $this->userValidator;
-        $permissionRepo = $this->permissionRepo;
         $userRepo = $this->userRepository;
 
-        $userValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid( $auth_token);
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'delete');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $user = $userRepo->deleteUser($username);
         return $this->respondWithData($user);

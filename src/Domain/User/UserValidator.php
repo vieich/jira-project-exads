@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Application\Actions\User;
+namespace App\Domain\User;
 
-use App\Application\Actions\Validator;
 use App\Domain\User\Exception\UserNoAuthorizationException;
 use App\Domain\User\Exception\UserPasswordFormatException;
 use App\Domain\User\Exception\UserRoleException;
 use App\Domain\User\Exception\UserUsernameFormatException;
+use App\Domain\Validator;
 
 class UserValidator extends Validator
 {

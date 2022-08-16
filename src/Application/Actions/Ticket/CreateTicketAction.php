@@ -2,6 +2,7 @@
 
 namespace App\Application\Actions\Ticket;
 
+use App\Domain\Permission\Permission;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class CreateTicketAction extends TicketAction
@@ -83,11 +84,9 @@ class CreateTicketAction extends TicketAction
 
         $ticketValidator = $this->ticketValidator;
         $ticketRepo = $this->ticketRepository;
-        $permissionRepo = $this->permissionRepo;
+        $permissionRepo = $this->permissionRepository;
 
-        $ticketValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'create');
+        (new Permission($permissionRepo))->checkIfHasAccess($auth_token, 'create');
 
         $ticketValidator->checkIfPayloadStructureIsValid($args);
         $ticketValidator->checkIfTicketNameIsValid($ticketName);

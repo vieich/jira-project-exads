@@ -39,7 +39,11 @@ return function (ContainerBuilder $containerBuilder) {
 
             $dsn = "$driver:host=$host;dbname=$dbname;charset=$charset";
 
-            return new PDO($dsn, $username, $password);
+            try {
+                return new PDO($dsn, $username, $password);
+            } catch (PDOException $e) {
+                throw new Exception("Unable to connect to DB");
+            }
         },
     ]);
 };

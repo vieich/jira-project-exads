@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Application\Actions\User;
 
+use App\Domain\Permission\Permission;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class ListUsersAction extends UserAction
@@ -63,23 +64,20 @@ class ListUsersAction extends UserAction
     {
         $auth_token = $this->getAuthTokenHeader();
         $data = $this->getFormData();
-        $showHistory = $data['showHistory'] ?? false;
+        $showDeleted = $data['showDeleted'] ?? false;
+        $operation = ['read'];
 
-        $permissionRepo = $this->permissionRepo;
         $userRepo = $this->userRepository;
         $userValidator = $this->userValidator;
 
-        $userValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-
-        if (isset($showHistory)) {
-            $userValidator->checkIfShowHistoryIsValid($showHistory);
-            $permissionRepo->checkIfUserCanDoOperation($auth_token, 'history');
+        if ($showDeleted) {
+            $userValidator->checkIfShowHistoryIsValid($showDeleted);
+            $operation[] = 'showDeleted';
         }
 
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'read');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
-        $users = $userRepo->findAll($showHistory);
+        $users = $userRepo->findAll($showDeleted);
         $this->logger->info("Users list was viewed.");
 
         return $this->respondWithData($users);

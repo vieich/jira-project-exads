@@ -4,6 +4,7 @@ namespace App\Application\Actions\Section;
 
 use App\Application\Actions\Action;
 use App\Domain\Section\SectionRepository;
+use App\Domain\Section\SectionValidator;
 use App\Infrastructure\Persistence\Permission\PermissionRepo;
 use Psr\Log\LoggerInterface;
 

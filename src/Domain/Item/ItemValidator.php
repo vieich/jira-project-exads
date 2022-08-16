@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Application\Actions\Items;
+namespace App\Domain\Item;
 
-use App\Application\Actions\Validator;
 use App\Domain\Item\Exception\ItemNameFormatException;
 use App\Domain\Item\Exception\ItemSectionIdFormatException;
+use App\Domain\Validator;
 
 class ItemValidator extends Validator
 {

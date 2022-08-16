@@ -2,6 +2,7 @@
 
 namespace App\Application\Actions\Tab;
 
+use App\Domain\Permission\Permission;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class ListTabAction extends TabAction
@@ -67,6 +68,9 @@ class ListTabAction extends TabAction
         $permissionRepo = $this->permissionRepository;
         $tabValidator = $this->tabValidator;
         $tabRepo = $this->tabRepository;
+
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, 'update');
+
 
         $tabValidator->checkIfHeaderIsMissing($auth_token);
         $permissionRepo->checkIfAuthTokenIsValid($auth_token);

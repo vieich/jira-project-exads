@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Application\Actions\Section;
+namespace App\Domain\Section;
 
-use App\Application\Actions\Validator;
 use App\Domain\Section\Exception\SectionNameFormatException;
 use App\Domain\Section\Exception\SectionTabIdFormatException;
+use App\Domain\Validator;
 
 class SectionValidator extends Validator
 {

@@ -2,6 +2,10 @@
 
 namespace App\Application\Actions\User;
 
+use App\Domain\DomainException\DomainPayloadStructureValidatorException;
+use App\Domain\User\Exception\UserPasswordFormatException;
+use App\Domain\User\Exception\UserRoleException;
+use App\Domain\User\Exception\UserUsernameFormatException;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class CreateUserAction extends UserAction
@@ -37,6 +41,10 @@ class CreateUserAction extends UserAction
      *          )
      *     )
      * )
+     * @throws DomainPayloadStructureValidatorException
+     * @throws UserUsernameFormatException
+     * @throws UserRoleException
+     * @throws UserPasswordFormatException
      */
     protected function action(): Response
     {

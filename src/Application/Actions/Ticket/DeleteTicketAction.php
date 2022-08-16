@@ -2,6 +2,7 @@
 
 namespace App\Application\Actions\Ticket;
 
+use App\Domain\Permission\Permission;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class DeleteTicketAction extends TicketAction
@@ -77,13 +78,9 @@ class DeleteTicketAction extends TicketAction
         $auth_token = $this->getAuthTokenHeader();
         $ticketId = (int) $this->resolveArg('id');
 
-        $ticketValidator = $this->ticketValidator;
-        $permissionRepo = $this->permissionRepo;
         $ticketRepo = $this->ticketRepository;
 
-        $ticketValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'delete');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, 'delete');
 
         $action = $ticketRepo->deleteTicket($ticketId);
         return $this->respondWithData($action);

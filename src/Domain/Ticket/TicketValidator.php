@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Application\Actions\Ticket;
+namespace App\Domain\Ticket;
 
-use App\Application\Actions\Validator;
 use App\Domain\Ticket\Exception\TicketNameFormatException;
-use App\Domain\Ticket\Exception\TicketPayloadDataException;
+use App\Domain\Validator;
 
 class TicketValidator extends Validator
 {

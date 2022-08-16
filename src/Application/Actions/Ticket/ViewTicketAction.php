@@ -80,7 +80,7 @@ class ViewTicketAction extends TicketAction
         $auth_token = $this->getAuthTokenHeader();
         $ticketId = (int) $this->resolveArg('id');
 
-        $permissionRepo = $this->permissionRepo;
+        $permissionRepo = $this->permissionRepository;
         $ticketRepo = $this->ticketRepository;
         $ticketValidator = $this->ticketValidator;
 
