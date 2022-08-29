@@ -3,7 +3,11 @@ declare(strict_types=1);
 
 namespace App\Application\Actions\User;
 
+use App\Domain\DomainException\DomainDataFormatException;
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\Permission\Permission;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class ListUsersAction extends UserAction
@@ -59,25 +63,30 @@ class ListUsersAction extends UserAction
      *          )
      *     )
      * )
+     * @throws DomainDataFormatException
+     * @throws PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     * @throws UserNotFoundException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
         $data = $this->getFormData();
         $showDeleted = $data['showDeleted'] ?? false;
-        $operation = ['read'];
+        $operation[] = 'read';
 
         $userRepo = $this->userRepository;
         $userValidator = $this->userValidator;
 
         if ($showDeleted) {
-            $userValidator->checkIfShowHistoryIsValid($showDeleted);
+            $userValidator->checkIfShowDeletedIsValid($showDeleted);
             $operation[] = 'showDeleted';
         }
 
         (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $users = $userRepo->findAll($showDeleted);
+
         $this->logger->info("Users list was viewed.");
 
         return $this->respondWithData($users);

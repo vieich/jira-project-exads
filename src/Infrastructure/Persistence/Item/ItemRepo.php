@@ -13,9 +13,16 @@ use PDO;
 class ItemRepo extends Database implements ItemRepository
 {
 
-    public function findAll(): array
+    /**
+     * @throws ItemNotFoundException
+     */
+    public function findAll(bool $showDeleted): array
     {
         $query = 'SELECT i.id, i.name, i.section_id, i.is_active, s.name as statusName FROM items i JOIN status s on s.id = i.status_id';
+
+        if (!$showDeleted) {
+            $query .= ' WHERE is_active = true';
+        }
 
         $stmt = $this->getConnection()->prepare($query);
         $stmt->execute();
@@ -63,6 +70,10 @@ class ItemRepo extends Database implements ItemRepository
         );
     }
 
+    /**
+     * @throws ItemNoParentSectionException
+     * @throws ItemOperationException
+     */
     public function createItem(string $itemName, int $sectionId): Item
     {
         $this->checkIfParentSectionExist($sectionId);
@@ -86,6 +97,10 @@ class ItemRepo extends Database implements ItemRepository
         );
     }
 
+    /**
+     * @throws ItemNotFoundException
+     * @throws ItemOperationException
+     */
     public function deleteItem(int $itemId): array
     {
         $this->findItemById($itemId);
@@ -105,6 +120,9 @@ class ItemRepo extends Database implements ItemRepository
         ];
     }
 
+    /**
+     * @throws ItemNoParentSectionException
+     */
     private function checkIfParentSectionExist(int $sectionId)
     {
         $query = 'SELECT name FROM sections WHERE id = :id';
@@ -120,6 +138,9 @@ class ItemRepo extends Database implements ItemRepository
         }
     }
 
+    /**
+     * @throws ItemNotFoundException
+     */
     public function updateItem(int $itemId, string $name = null, int $statusId = null): Item
     {
         $queryUpdate = 'UPDATE items ';
@@ -141,7 +162,7 @@ class ItemRepo extends Database implements ItemRepository
         } elseif (!is_null($statusId)) {
             $query = $queryUpdate . 'SET status_id = :statusId WHERE id = :id';
             $stmt = $this->getConnection()->prepare($query);
-            $stmt->bindValue('name', $name);
+            $stmt->bindValue('id', $itemId, PDO::PARAM_INT);
             $stmt->bindValue('statusId', $statusId, PDO::PARAM_INT);
         }
 

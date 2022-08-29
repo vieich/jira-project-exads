@@ -2,6 +2,7 @@
 
 namespace App\Domain\Permission;
 
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
 use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\User\Exception\UserNoAuthorizationException;
 use App\Domain\User\Exception\UserNotFoundException;
@@ -21,10 +22,11 @@ class Permission
 
     /**
      * @param string $auth_token
+     * @param array $operation
      *
-     * @throws Exception\PermissionAuthTokenException
-     * @throws UserNoAuthorizationException
-     * @throws UserNotFoundException|PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     * @throws PermissionNoAuthorizationException
+     * @throws UserNotFoundException
      */
     public function checkIfHasAccess(string $auth_token, array $operation)
     {

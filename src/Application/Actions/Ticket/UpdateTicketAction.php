@@ -2,8 +2,14 @@
 
 namespace App\Application\Actions\Ticket;
 
+use App\Domain\DomainException\DomainPayloadStructureValidatorException;
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\Permission\Permission;
+use App\Domain\Ticket\Exception\TicketNameFormatException;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpBadRequestException;
 
 class UpdateTicketAction extends TicketAction
 {
@@ -91,6 +97,12 @@ class UpdateTicketAction extends TicketAction
      *          )
      *     )
      * )
+     * @throws DomainPayloadStructureValidatorException
+     * @throws TicketNameFormatException
+     * @throws HttpBadRequestException
+     * @throws PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     * @throws UserNotFoundException
      */
     protected function action(): Response
     {
@@ -99,18 +111,22 @@ class UpdateTicketAction extends TicketAction
 
         $data = $this->getFormData();
         $ticketName = $data['ticketName'] ?? null;
+        $operation[] = 'update';
 
         $valuesToUpdate = compact('ticketName');
 
         $ticketValidator = $this->ticketValidator;
         $ticketRepo = $this->ticketRepository;
 
-        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, 'update');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $ticketValidator->checkIfPayloadStructureIsValid($valuesToUpdate);
         $ticketValidator->checkIfTicketNameIsValid($ticketName);
 
         $ticket = $ticketRepo->updateTicket($ticketId, $ticketName);
+
+        $this->logger->info('Ticket with id ' . $ticketId . ' name was updated to ' . $ticketName);
+
         return $this->respondWithData($ticket);
     }
 }

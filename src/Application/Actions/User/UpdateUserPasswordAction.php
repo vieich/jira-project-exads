@@ -55,6 +55,9 @@ class UpdateUserPasswordAction extends UserAction
         $userValidator->checkIfPasswordFormatIsValid($newPassword);
 
         $action = $userRepo->updateUserPassword($userId, $oldPassword, $newPassword);
+
+        $this->logger->info($userByToken->getName() . ' successfully changed password.');
+
         return $this->respondWithData($action);
     }
 }

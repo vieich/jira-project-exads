@@ -2,8 +2,14 @@
 
 namespace App\Application\Actions\Tab;
 
+use App\Domain\DomainException\DomainPayloadStructureValidatorException;
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\Permission\Permission;
+use App\Domain\Tab\Exception\TabNameFormatException;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpBadRequestException;
 
 class UpdateTabAction extends TabAction
 {
@@ -91,6 +97,12 @@ class UpdateTabAction extends TabAction
      *              )
      *          )
      * )
+     * @throws DomainPayloadStructureValidatorException
+     * @throws TabNameFormatException
+     * @throws HttpBadRequestException
+     * @throws PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     * @throws UserNotFoundException
      */
     protected function action(): Response
     {
@@ -99,18 +111,22 @@ class UpdateTabAction extends TabAction
 
         $data = $this->getFormData();
         $tabName = $data['tabName'] ?? null;
+        $operation[] = 'update';
 
         $args = compact('tabName');
 
         $tabValidator = $this->tabValidator;
         $tabRepo = $this->tabRepository;
 
-        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, 'update');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $tabValidator->checkIfPayloadStructureIsValid($args);
         $tabValidator->checkIfTabNameIsValid($tabName);
 
         $tab = $tabRepo->updateTab($tabId, $tabName);
+
+        $this->logger->info(' Tab name updated to ' . $tabName);
+
         return $this->respondWithData($tab);
 
     }

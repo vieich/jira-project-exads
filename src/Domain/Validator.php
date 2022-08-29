@@ -30,7 +30,7 @@ class Validator
     /**
      * @throws DomainDataFormatException
      */
-    public function checkIfShowHistoryIsValid($showHistoric): void
+    public function checkIfShowDeletedIsValid($showHistoric): void
     {
         if (!is_bool($showHistoric)) {
             throw new DomainDataFormatException('Field showHistoric must be true or false');

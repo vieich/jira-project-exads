@@ -13,6 +13,11 @@ use PDO;
 
 class PermissionRepo extends Database
 {
+    /**
+     * @throws UserNotFoundException
+     * @throws PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     */
     public function checkIfUserCanDoOperation(string $token, array $operation): void
     {
         $role = [
@@ -47,7 +52,7 @@ class PermissionRepo extends Database
             }
 
             if (!in_array($userRoleFromDb['role'], $role[$operation[0]])) {
-                throw new UserNoAuthorizationException('You have no permission for this operation');
+                throw new PermissionNoAuthorizationException('You have no permission for this operation');
             }
 
         } catch (\PDOException $e) {
@@ -55,6 +60,9 @@ class PermissionRepo extends Database
         }
     }
 
+    /**
+     * @throws PermissionAuthTokenException
+     */
     public function checkIfAuthTokenIsValid(string $token): void
     {
         $tokenFromDb = $this->checkIfTokenIsExpired($token);
@@ -82,6 +90,10 @@ class PermissionRepo extends Database
         }
         return $statusId['id'];
     }
+
+    /**
+     * @throws PermissionAuthTokenException
+     */
     public function getAuthToken(string $username): array
     {
         $query = 'SELECT t.token FROM tokens t JOIN users u on t.user_id = u.id WHERE u.name = :name';
@@ -190,6 +202,9 @@ class PermissionRepo extends Database
         return $response;
     }
 
+    /**
+     * @throws PermissionAuthTokenException
+     */
     public function getUserByToken(string $token): User
     {
         $query = 'SELECT u.id, u.name, u.role, u.password , u.is_active FROM users u JOIN tokens t on u.id = t.user_id WHERE t.token = :token AND u.is_active = true';

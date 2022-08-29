@@ -2,7 +2,11 @@
 
 namespace App\Application\Actions\Tab;
 
+use App\Domain\DomainException\DomainDataFormatException;
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\Permission\Permission;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class ListTabAction extends TabAction
@@ -58,31 +62,32 @@ class ListTabAction extends TabAction
      *          )
      *     )
      * )
+     * @throws DomainDataFormatException
+     * @throws PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     * @throws UserNotFoundException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
         $data = $this->getFormData();
-        $showHistory = $data['showHistory'] ?? false;
+        $showDeleted = $data['showDeleted'] ?? false;
+        $operation[] = 'read';
 
-        $permissionRepo = $this->permissionRepository;
         $tabValidator = $this->tabValidator;
         $tabRepo = $this->tabRepository;
 
-        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, 'update');
-
-
-        $tabValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-
-        if (isset($showHistory)) {
-            $tabValidator->checkIfShowHistoryIsValid($showHistory);
-            $permissionRepo->checkIfUserCanDoOperation($auth_token, 'history');
+        if ($showDeleted) {
+            $tabValidator->checkIfShowDeletedIsValid($showDeleted);
+            $operation[] = 'showDeleted';
         }
 
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, "read");
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
-        $tabs = $tabRepo->findAll($showHistory);
+        $tabs = $tabRepo->findAll($showDeleted);
+
+        $this->logger->info('Tab list was viewed.');
+
         return $this->respondWithData($tabs);
     }
 }

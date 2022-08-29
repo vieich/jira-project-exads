@@ -13,6 +13,10 @@ use PDO;
 class SectionRepo extends Database implements SectionRepository
 {
 
+    /**
+     * @throws SectionOperationException
+     * @throws SectionNoParentException
+     */
     public function createSection(string $sectionName, int $tabId): Section
     {
         $this->checkIfParentTabExists($tabId);
@@ -36,9 +40,17 @@ class SectionRepo extends Database implements SectionRepository
         );
     }
 
-    public function findAll(): array
+    /**
+     * @throws SectionNotFoundException
+     */
+    public function findAll(bool $showDeleted): array
     {
-        $query = 'SELECT id, name, tab_id, is_active FROM sections WHERE is_active = true';
+        $query = 'SELECT id, name, tab_id, is_active FROM sections';
+
+        if (!$showDeleted) {
+            $query .= ' WHERE is_active = true';
+        }
+
         $stmt = $this->getConnection()->prepare($query);
         $stmt->execute();
 
@@ -61,6 +73,9 @@ class SectionRepo extends Database implements SectionRepository
         return $result;
     }
 
+    /**
+     * @throws SectionNotFoundException
+     */
     public function findSectionById(int $sectionId): Section
     {
         $query = 'SELECT id, name, tab_id, is_active FROM sections WHERE id = :id AND is_active = true';
@@ -71,7 +86,7 @@ class SectionRepo extends Database implements SectionRepository
         $section = $stmt->fetch();
 
         if (!$section) {
-            throw new SectionNotFoundException();
+            throw new SectionNotFoundException('Section does not exist.');
         }
 
         return new Section(
@@ -82,6 +97,10 @@ class SectionRepo extends Database implements SectionRepository
         );
     }
 
+    /**
+     * @throws SectionNotFoundException
+     * @throws SectionOperationException
+     */
     public function deleteSection(int $sectionId): array
     {
         $this->findSectionById($sectionId);
@@ -102,9 +121,13 @@ class SectionRepo extends Database implements SectionRepository
         ];
     }
 
+    /**
+     * @throws SectionOperationException
+     * @throws SectionNotFoundException
+     */
     public function updateSection(int $sectionId, string $sectionName): Section
     {
-        $this->checkIfSectionExists($sectionId);
+        $section = $this->findSectionById($sectionId);
 
         $query = 'UPDATE sections SET name = :name WHERE id = :id';
 
@@ -114,12 +137,17 @@ class SectionRepo extends Database implements SectionRepository
         $stmt->execute();
 
         if ($stmt->rowCount() == 0) {
-            throw new SectionOperationException('Update section failed.');
+            throw new SectionOperationException('Update section failed, nothing to update');
         }
 
-        return $this->findSectionById($sectionId);
+        $section->setName($sectionName);
+
+        return $section;
     }
 
+    /**
+     * @throws SectionNoParentException
+     */
     private function checkIfParentTabExists(int $tabId)
     {
         $query = 'SELECT name FROM tabs WHERE id = :id AND is_active = true';

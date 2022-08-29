@@ -17,22 +17,21 @@ class ViewItemAction extends ItemAction
      * @throws PermissionNoAuthorizationException
      * @throws PermissionAuthTokenException
      * @throws HttpBadRequestException
-     * @throws UserNoAuthorizationException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
         $itemId = (int) $this->resolveArg('id');
+        $operation[] = 'read';
 
         $itemRepo = $this->itemRepository;
 
-        (new Permission($this->permissionRepo))->checkIfHasAccess($auth_token, 'read');
+        (new Permission($this->permissionRepo))->checkIfHasAccess($auth_token, $operation);
 
         $item = $itemRepo->findItemById($itemId);
+
+        $this->logger->info('Item with id ' . $itemId . ' viewed.');
+
         return $this->respondWithData($item);
-
-
-
-
     }
 }

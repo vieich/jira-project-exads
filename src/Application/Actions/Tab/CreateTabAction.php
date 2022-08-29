@@ -2,7 +2,12 @@
 
 namespace App\Application\Actions\Tab;
 
+use App\Domain\DomainException\DomainPayloadStructureValidatorException;
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\Permission\Permission;
+use App\Domain\Tab\Exception\TabNameFormatException;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use OpenApi\Annotations as OA;
 
@@ -76,6 +81,11 @@ class CreateTabAction extends TabAction
      *          )
      *     )
      * )
+     * @throws DomainPayloadStructureValidatorException
+     * @throws TabNameFormatException
+     * @throws PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     * @throws UserNotFoundException
      */
 
     protected function action(): Response
@@ -85,18 +95,22 @@ class CreateTabAction extends TabAction
         $data = $this->getFormData();
         $tabName = $data['tabName'] ?? null;
         $ticketId = $data['ticketId'] ?? null;
+        $operation[] = 'create';
 
         $args = compact('tabName', 'ticketId');
 
         $tabValidator = $this->tabValidator;
         $tabRepo = $this->tabRepository;
 
-        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, 'create');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $tabValidator->checkIfPayloadStructureIsValid($args);
         $tabValidator->checkIfTabNameIsValid($tabName);
 
         $tab = $tabRepo->createTab($tabName, $ticketId);
+
+        $this->logger->info('Tab with id ' . $tab->getId() . ' created.');
+
         return $this->respondWithData($tab);
     }
 }

@@ -37,11 +37,16 @@ class Section implements \JsonSerializable
         return $this->is_active;
     }
 
+    public function setName(string $name)
+    {
+        $this->name = $name;
+    }
+
     public function jsonSerialize()
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
+            'sectionId' => $this->id,
+            'sectionName' => $this->name,
             'tabId' => $this->tab_id,
             'isActive' => $this->is_active
         ];

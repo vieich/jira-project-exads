@@ -67,6 +67,9 @@ class CreateUserAction extends UserAction
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
         $user = $this->userRepository->createUser($username, $role, $hashedPassword);
+
+        $this->logger->info('User with id ' . $user->getId() . ' created');
+
         return $this->respondWithData($user);
     }
 }

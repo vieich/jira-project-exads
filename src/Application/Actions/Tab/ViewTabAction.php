@@ -2,7 +2,12 @@
 
 namespace App\Application\Actions\Tab;
 
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
+use App\Domain\Permission\Permission;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpBadRequestException;
 
 class ViewTabAction extends TabAction
 {
@@ -73,21 +78,25 @@ class ViewTabAction extends TabAction
      *          )
      *     )
      * )
+     * @throws HttpBadRequestException
+     * @throws PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     * @throws UserNotFoundException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
         $tabId = (int) $this->resolveArg('id');
+        $operation[] = 'read';
 
-        $permissionRepo = $this->permissionRepository;
         $tabRepo = $this->tabRepository;
-        $tabValidator = $this->tabValidator;
 
-        $tabValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'read');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $tab = $tabRepo->findTabById($tabId);
+
+        $this->logger->info('Tab with id ' . $tabId . ' viewed.');
+
         return $this->respondWithData($tab);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Domain\Item;
 
 interface ItemRepository
 {
-    public function findAll(): array;
+    public function findAll(bool $showDeleted): array;
     public function findItemById(int $itemId): Item;
     public function createItem(string $itemName, int $sectionId): Item;
     public function deleteItem(int $itemId);

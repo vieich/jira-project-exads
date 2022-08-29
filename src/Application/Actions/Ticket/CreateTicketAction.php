@@ -2,7 +2,12 @@
 
 namespace App\Application\Actions\Ticket;
 
+use App\Domain\DomainException\DomainPayloadStructureValidatorException;
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\Permission\Permission;
+use App\Domain\Ticket\Exception\TicketNameFormatException;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class CreateTicketAction extends TicketAction
@@ -73,12 +78,19 @@ class CreateTicketAction extends TicketAction
      *          )
      *     )
      * )
+     * @throws DomainPayloadStructureValidatorException
+     * @throws TicketNameFormatException
+     * @throws PermissionAuthTokenException
+     * @throws PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     * @throws UserNotFoundException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
         $data = $this->getFormData();
         $ticketName = $data['ticketName'] ?? null;
+        $operation[] = 'create';
 
         $args = compact('ticketName');
 
@@ -86,14 +98,16 @@ class CreateTicketAction extends TicketAction
         $ticketRepo = $this->ticketRepository;
         $permissionRepo = $this->permissionRepository;
 
-        (new Permission($permissionRepo))->checkIfHasAccess($auth_token, 'create');
+        (new Permission($permissionRepo))->checkIfHasAccess($auth_token, $operation);
 
         $ticketValidator->checkIfPayloadStructureIsValid($args);
         $ticketValidator->checkIfTicketNameIsValid($ticketName);
 
         $user = $permissionRepo->getUserByToken($auth_token);
-
         $ticket = $ticketRepo->createTicket($ticketName, $user->getId());
+
+        $this->logger->info('Ticket with id ' . $ticket->getId() . ' created.');
+
         return $this->respondWithData($ticket);
     }
 }

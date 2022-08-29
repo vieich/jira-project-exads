@@ -18,18 +18,21 @@ class ViewSectionAction extends SectionAction
      * @throws PermissionNoAuthorizationException
      * @throws PermissionAuthTokenException
      * @throws HttpBadRequestException
-     * @throws UserNoAuthorizationException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
         $sectionId = (int) $this->resolveArg('id');
+        $operation[] = 'read';
 
         $sectionRepo = $this->sectionRepository;
 
-        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, 'read');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $section = $sectionRepo->findSectionById($sectionId);
+
+        $this->logger->info('Section with id ' . $sectionId . ' viewed.');
+
         return $this->respondWithData($section);
     }
 }

@@ -2,8 +2,12 @@
 
 namespace App\Application\Actions\Tab;
 
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\Permission\Permission;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
+use Slim\Exception\HttpBadRequestException;
 
 class DeleteTabAction extends TabAction
 {
@@ -72,17 +76,25 @@ class DeleteTabAction extends TabAction
      *          )
      *     )
      * )
+     * @throws HttpBadRequestException
+     * @throws PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     * @throws UserNotFoundException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
         $tabId = (int) $this->resolveArg('id');
+        $operation[] = 'delete';
 
         $tabRepo = $this->tabRepository;
 
-        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, 'delete');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $action = $tabRepo->deleteTabById($tabId);
+
+        $this->logger->info('Tab with id ' . $tabId . ' deleted.');
+
         return $this->respondWithData($action);
     }
 }

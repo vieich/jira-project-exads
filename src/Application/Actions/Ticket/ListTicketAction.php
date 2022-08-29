@@ -3,7 +3,10 @@
 namespace App\Application\Actions\Ticket;
 
 use App\Domain\DomainException\DomainDataFormatException;
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\Permission\Permission;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class ListTicketAction extends TicketAction
@@ -60,25 +63,31 @@ class ListTicketAction extends TicketAction
      *     )
      * )
      * @throws DomainDataFormatException
+     * @throws PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     * @throws UserNotFoundException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
         $data = $this->getFormData();
         $showDeleted = $data['showDeleted'] ?? false;
-        $operation = ['read'];
+        $operation[] = 'read';
 
         $ticketValidator = $this->ticketValidator;
         $ticketRepo = $this->ticketRepository;
 
         if ($showDeleted) {
-            $ticketValidator->checkIfShowHistoryIsValid($showDeleted);
+            $ticketValidator->checkIfShowDeletedIsValid($showDeleted);
             $operation[] = 'showDeleted';
         }
 
         (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $tickets = $ticketRepo->findAll($showDeleted);
+
+        $this->logger->info('Ticket list was viewed.');
+
         return $this->respondWithData($tickets);
     }
 }

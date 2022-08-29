@@ -2,7 +2,10 @@
 
 namespace App\Application\Actions\User;
 
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\Permission\Permission;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
 
@@ -85,11 +88,14 @@ class DeleteUserAction extends UserAction
      *     )
      * )
      * @throws HttpBadRequestException
+     * @throws PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     * @throws UserNotFoundException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
-        $operation = ['delete'];
+        $operation[] = 'delete';
 
         $username = $this->resolveArg('username');
 
@@ -98,6 +104,9 @@ class DeleteUserAction extends UserAction
         (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $user = $userRepo->deleteUser($username);
+
+        $this->logger->info($username . ' deleted.');
+
         return $this->respondWithData($user);
     }
 }

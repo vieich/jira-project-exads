@@ -12,6 +12,9 @@ use PDO;
 
 class UserRepo extends Database implements UserRepository
 {
+    /**
+     * @throws UserNotFoundException
+     */
     public function findAll(bool $showHistory): array
     {
         $query = 'SELECT id, name, role, is_active, password FROM users';
@@ -42,6 +45,9 @@ class UserRepo extends Database implements UserRepository
         return $result;
     }
 
+    /**
+     * @throws UserNotFoundException
+     */
     public function findUserOfId(int $id): User
     {
         $query = 'SELECT id, name, role, password, is_active FROM users WHERE id = :id AND is_active = true';
@@ -65,6 +71,9 @@ class UserRepo extends Database implements UserRepository
         );
     }
 
+    /**
+     * @throws UserOperationException
+     */
     public function createUser(string $name, string $role, string $password): User
     {
         $query = 'INSERT INTO users (name, role, password, is_active) VALUE (:name, :role, :password, :isActive)';
@@ -92,6 +101,10 @@ class UserRepo extends Database implements UserRepository
         );
     }
 
+    /**
+     * @throws UserOperationException
+     * @throws UserNotFoundException
+     */
     public function deleteUser(string $username): array
     {
         $user = $this->checkIfUserExists($username);
@@ -183,6 +196,9 @@ class UserRepo extends Database implements UserRepository
         }
     }
 
+    /**
+     * @throws UserNotFoundException
+     */
     public function checkIfUserExists($username): User
     {
         $query = "SELECT id, name, role, is_active, password FROM users WHERE name = :name AND is_active = true";

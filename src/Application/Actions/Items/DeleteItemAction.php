@@ -17,18 +17,21 @@ class DeleteItemAction extends ItemAction
      * @throws PermissionNoAuthorizationException
      * @throws PermissionAuthTokenException
      * @throws HttpBadRequestException
-     * @throws UserNoAuthorizationException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
-        $sectionId = (int) $this->resolveArg('id');
+        $itemId = (int) $this->resolveArg('id');
+        $operation[] = 'delete';
 
         $itemRepo = $this->itemRepository;
 
-        (new Permission($this->permissionRepo))->checkIfHasAccess($auth_token, 'delete');
+        (new Permission($this->permissionRepo))->checkIfHasAccess($auth_token, $operation);
 
-        $action = $itemRepo->deleteItem($sectionId);
+        $action = $itemRepo->deleteItem($itemId);
+
+        $this->logger->info('Item with id ' . $itemId . ' deleted.');
+
         return $this->respondWithData($action);
     }
 }

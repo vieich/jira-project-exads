@@ -19,7 +19,6 @@ class UpdateItemAction extends ItemAction
      * @throws ItemStatusException
      * @throws UserNotFoundException
      * @throws PermissionAuthTokenException
-     * @throws UserNoAuthorizationException
      * @throws PermissionNoAuthorizationException
      * @throws ItemNameFormatException
      * @throws HttpBadRequestException
@@ -31,31 +30,35 @@ class UpdateItemAction extends ItemAction
         $itemId = (int) $this->resolveArg('id');
 
         $data = $this->getFormData();
-        $name = $data['name'] ?? null;
+        $itemName = $data['itemName'] ?? null;
         $statusName = $data['statusName'] ?? null;
+        $operation[] = 'update';
 
         $permissionRepo = $this->permissionRepo;
         $itemValidator = $this->itemValidator;
         $itemRepo = $this->itemRepository;
 
-        (new Permission($permissionRepo))->checkIfHasAccess($auth_token, 'update');
+        (new Permission($permissionRepo))->checkIfHasAccess($auth_token, $operation);
 
         $statusId = null;
 
-        if (!$name && !$statusName) {
-            $args = compact('name', 'statusName');
+        if (!$itemName && !$statusName) {
+            $args = compact('itemName', 'statusName');
             $itemValidator->checkIfPayloadStructureIsValid($args);
         }
 
-        if ($name) {
-            $itemValidator->checkIfItemNameIsValid($name);
+        if ($itemName) {
+            $itemValidator->checkIfItemNameIsValid($itemName);
         }
 
         if ($statusName) {
             $statusId = $permissionRepo->checkIfItemStatusIsValidAndReturnId($statusName);
         }
 
-        $item = $itemRepo->updateItem($itemId, $name, $statusId);
+        $item = $itemRepo->updateItem($itemId, $itemName, $statusId);
+
+        $this->logger->info(' Item with id ' . $itemId . ' was updated.');
+
         return $this->respondWithData($item);
     }
 }

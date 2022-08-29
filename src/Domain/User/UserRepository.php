@@ -8,7 +8,7 @@ interface UserRepository
 
     public function findAll(bool $showHistory): array;
     public function findUserOfId(int $id): User;
-    public function createUser(string $name, string $role, string $password);
+    public function createUser(string $name, string $role, string $password): User;
     public function updateUserUsername(int $userId, string $username): User;
     public function updateUserPassword(int $userId, string $oldPassword, string $newPassword): array;
     public function deleteUser(string $username);

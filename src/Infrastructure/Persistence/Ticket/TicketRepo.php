@@ -14,6 +14,9 @@ use PDO;
 class TicketRepo extends Database implements TicketRepository
 {
 
+    /**
+     * @throws TicketNotFoundException
+     */
     public function findAll(bool $showHistory): array
     {
         $query = 'SELECT id, name, user_id, is_active  FROM tickets';
@@ -43,6 +46,9 @@ class TicketRepo extends Database implements TicketRepository
         return $result;
     }
 
+    /**
+     * @throws TicketNotFoundException
+     */
     public function findTicketById(int $ticketId): Ticket
     {
         $query = "SELECT id, name, user_id, is_active FROM tickets WHERE id = :id AND is_active = true";
@@ -65,6 +71,9 @@ class TicketRepo extends Database implements TicketRepository
         );
     }
 
+    /**
+     * @throws TicketCreateException
+     */
     public function createTicket(string $ticketName, int $creatorId): Ticket
     {
         $query = "INSERT INTO tickets (name, user_id) VALUE (:name, :user_id)";
@@ -86,6 +95,10 @@ class TicketRepo extends Database implements TicketRepository
         );
     }
 
+    /**
+     * @throws TicketOperationException
+     * @throws TicketNotFoundException
+     */
     public function deleteTicket(int $ticketId): array
     {
         $this->findTicketById($ticketId);
@@ -106,6 +119,10 @@ class TicketRepo extends Database implements TicketRepository
         ];
     }
 
+    /**
+     * @throws TicketOperationException
+     * @throws TicketNotFoundException
+     */
     public function updateTicket(int $ticketId, string $ticketName): Ticket
     {
         $ticket = $this->findTicketById($ticketId);

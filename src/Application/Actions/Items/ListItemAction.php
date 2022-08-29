@@ -2,6 +2,7 @@
 
 namespace App\Application\Actions\Items;
 
+use App\Domain\DomainException\DomainDataFormatException;
 use App\Domain\Permission\Exception\PermissionAuthTokenException;
 use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\Permission\Permission;
@@ -16,17 +17,28 @@ class ListItemAction extends ItemAction
      * @throws UserNotFoundException
      * @throws PermissionNoAuthorizationException
      * @throws PermissionAuthTokenException
-     * @throws UserNoAuthorizationException
+     * @throws DomainDataFormatException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
+        $data = $this->getFormData();
+        $showDeleted = $data['showDeleted'] ?? false;
+        $operation[] = 'read';
 
         $itemRepository = $this->itemRepository;
 
-        (new Permission($this->permissionRepo))->checkIfHasAccess($auth_token, 'read');
+        if ($showDeleted) {
+            $this->itemValidator->checkIfShowDeletedIsValid($showDeleted);
+            $operation[] = 'showDeleted';
+        }
 
-        $items = $itemRepository->findAll();
+        (new Permission($this->permissionRepo))->checkIfHasAccess($auth_token, $operation);
+
+        $items = $itemRepository->findAll($showDeleted);
+
+        $this->logger->info('List of items viewed.');
+
         return $this->respondWithData($items);
     }
 }

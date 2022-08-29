@@ -4,6 +4,9 @@ namespace App\Application\Actions\User;
 
 use App\Domain\DomainException\DomainPayloadStructureValidatorException;
 use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
+use App\Domain\User\Exception\UserNoAuthorizationException;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class LoginUserAction extends UserAction
@@ -56,6 +59,9 @@ class LoginUserAction extends UserAction
      * )
      * @throws DomainPayloadStructureValidatorException
      * @throws PermissionAuthTokenException
+     * @throws PermissionAuthTokenException
+     * @throws UserNotFoundException
+     * @throws UserNoAuthorizationException
      */
     protected function action(): Response
     {
@@ -73,6 +79,8 @@ class LoginUserAction extends UserAction
         $userRepo->checkIfUserPasswordIsCorrect($username, $password);
 
         $getAuthToken = $this->permissionRepository->getAuthToken($username);
+
+        $this->logger->info($username . ' successfully log in.');
 
         return $this->respondWithData($getAuthToken);
     }

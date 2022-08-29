@@ -12,6 +12,10 @@ use PDO;
 
 class TabRepo extends Database implements TabRepository
 {
+    /**
+     * @throws TabOperationException
+     * @throws TabNoParentTicketException
+     */
     public function createTab(string $tabName, int $ticketId): Tab
     {
         $this->checkIfParentTicketExist($ticketId);
@@ -36,11 +40,14 @@ class TabRepo extends Database implements TabRepository
         );
     }
 
-    public function findAll(bool $showHistory): array
+    /**
+     * @throws TabNoFoundException
+     */
+    public function findAll(bool $showDeleted): array
     {
         $query = 'SELECT id, name, ticket_id, is_active FROM tabs';
 
-        if (!$showHistory) {
+        if (!$showDeleted) {
             $query .= ' WHERE is_active = true';
         }
 
@@ -66,6 +73,9 @@ class TabRepo extends Database implements TabRepository
         return $result;
     }
 
+    /**
+     * @throws TabNoFoundException
+     */
     public function findTabById(int $tabId): Tab
     {
         $query = 'SELECT id, name, ticket_id, is_active FROM tabs WHERE id = :id AND is_active = true';
@@ -88,6 +98,10 @@ class TabRepo extends Database implements TabRepository
         );
     }
 
+    /**
+     * @throws TabNoFoundException
+     * @throws TabOperationException
+     */
     public function deleteTabById(int $tabId): array
     {
 
@@ -109,6 +123,10 @@ class TabRepo extends Database implements TabRepository
         ];
     }
 
+    /**
+     * @throws TabNoFoundException
+     * @throws TabOperationException
+     */
     public function updateTab(int $tabId, string $tabName): Tab
     {
         $tab = $this->findTabById($tabId);
@@ -127,6 +145,9 @@ class TabRepo extends Database implements TabRepository
         return $tab;
     }
 
+    /**
+     * @throws TabNoParentTicketException
+     */
     private function checkIfParentTicketExist(int $ticketId)
     {
         $queryTicketExist = 'SELECT name FROM tickets WHERE id = :id';

@@ -81,3 +81,64 @@
 [2022-08-15T11:10:47.191483-04:00] slim-app.INFO: Users list was viewed. [] {"uid":"0af2329"}
 [2022-08-15T11:11:22.037931-04:00] slim-app.INFO: Users list was viewed. [] {"uid":"9525720"}
 [2022-08-15T11:11:39.580607-04:00] slim-app.INFO: Users list was viewed. [] {"uid":"a82fa73"}
+[2022-08-16T08:36:51.018278-04:00] slim-app.INFO: User of id `1` was viewed. [] {"uid":"73a1758"}
+[2022-08-16T08:42:52.350956-04:00] slim-app.INFO: Users list was viewed. [] {"uid":"fe63a7a"}
+[2022-08-16T08:43:02.084151-04:00] slim-app.INFO: Users list was viewed. [] {"uid":"e1e5139"}
+[2022-08-16T08:43:33.154835-04:00] slim-app.INFO: Users list was viewed. [] {"uid":"f713758"}
+[2022-08-16T08:44:02.680687-04:00] slim-app.INFO: Users list was viewed. [] {"uid":"2757f80"}
+[2022-08-16T08:52:21.845212-04:00] slim-app.INFO: vitinho successfully changed password. [] {"uid":"2d7fb46"}
+[2022-08-16T08:52:33.701496-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"5ec5c49"}
+[2022-08-16T08:52:41.679777-04:00] slim-app.INFO: vitinho successfully changed password. [] {"uid":"cacdccd"}
+[2022-08-16T08:52:47.627775-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"7a503e0"}
+[2022-08-16T08:53:09.302689-04:00] slim-app.INFO: User successfully changed name to vitinhoo [] {"uid":"48c133f"}
+[2022-08-16T08:53:12.161294-04:00] slim-app.INFO: User successfully changed name to vitinho [] {"uid":"c6781e9"}
+[2022-08-16T09:03:53.243134-04:00] slim-app.INFO: Ticket with id 9 deleted. [] {"uid":"b136425"}
+[2022-08-16T09:06:02.188524-04:00] slim-app.INFO: Ticket with id 7 deleted. [] {"uid":"95bdd15"}
+[2022-08-16T09:13:13.520066-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"7a52733"}
+[2022-08-16T09:13:21.065843-04:00] slim-app.INFO: Ticket list was viewed. [] {"uid":"8f6504d"}
+[2022-08-16T09:13:26.329801-04:00] slim-app.INFO: Ticket list was viewed. [] {"uid":"57966fb"}
+[2022-08-16T09:13:43.200697-04:00] slim-app.INFO: Ticket with id 3 viewed. [] {"uid":"bf90f23"}
+[2022-08-16T09:14:43.369809-04:00] slim-app.INFO: Ticket with id 3 viewed. [] {"uid":"23b04ef"}
+[2022-08-16T09:17:24.594104-04:00] slim-app.INFO: Tab with name tab1234 created. [] {"uid":"c414181"}
+[2022-08-16T09:20:52.851541-04:00] slim-app.INFO: Tab with id 27 deleted. [] {"uid":"58106af"}
+[2022-08-16T09:30:49.495515-04:00] slim-app.INFO:  Tab name updated to upetest [] {"uid":"d5aec41"}
+[2022-08-16T09:30:52.884754-04:00] slim-app.INFO: Tab list was viewed. [] {"uid":"3eb57c6"}
+[2022-08-16T09:33:39.199445-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"6f76e0c"}
+[2022-08-16T09:33:46.391986-04:00] slim-app.INFO: Tab with id 7 viewed. [] {"uid":"8694703"}
+[2022-08-16T09:40:07.537086-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"a8d957d"}
+[2022-08-16T09:40:31.030878-04:00] slim-app.INFO: Tab list was viewed. [] {"uid":"b3b10db"}
+[2022-08-16T09:40:36.135658-04:00] slim-app.INFO: Section with id 9 created. [] {"uid":"79059f2"}
+[2022-08-16T09:41:42.157297-04:00] slim-app.INFO: Section with id 9 was deleted. [] {"uid":"02d83f5"}
+[2022-08-16T09:47:52.839351-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"4c19553"}
+[2022-08-16T09:48:19.328709-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"b1b3804"}
+[2022-08-17T17:06:03.246656-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"a9e003c"}
+[2022-08-17T17:06:07.722979-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"c6aace7"}
+[2022-08-17T17:06:50.427250-04:00] slim-app.INFO: Section with id 11 created. [] {"uid":"c88a7e0"}
+[2022-08-17T17:06:53.109495-04:00] slim-app.INFO: Section with id 13 created. [] {"uid":"fc42382"}
+[2022-08-17T17:07:20.819584-04:00] slim-app.INFO: Section with id 13 was deleted. [] {"uid":"b21fdfc"}
+[2022-08-17T17:08:08.472802-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"1a7a1e6"}
+[2022-08-17T17:08:30.347342-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"410b4de"}
+[2022-08-17T17:08:51.268888-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"e5ce6cb"}
+[2022-08-17T17:08:55.248019-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"4c91002"}
+[2022-08-17T17:08:59.391301-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"aa1109a"}
+[2022-08-17T17:09:05.233542-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"7670e80"}
+[2022-08-17T17:09:49.708472-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"121e597"}
+[2022-08-17T17:26:24.927794-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"1e7e465"}
+[2022-08-24T14:06:58.259452-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"c43bbfe"}
+[2022-08-24T14:38:32.231818-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"2f18977"}
+[2022-08-24T14:38:51.259780-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"72dda4c"}
+[2022-08-28T11:05:38.927782-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"09a67b1"}
+[2022-08-28T11:06:03.461920-04:00] slim-app.INFO: Section with id 15 created. [] {"uid":"cbcea2b"}
+[2022-08-28T11:18:42.677572-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"cbee617"}
+[2022-08-28T11:19:05.398815-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"b488261"}
+[2022-08-28T11:29:43.255052-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"730054d"}
+[2022-08-28T11:29:54.780271-04:00] slim-app.INFO: Sections list viewed. [] {"uid":"fea3ece"}
+[2022-08-28T11:31:12.362023-04:00] slim-app.INFO:  Section name updated to updatete [] {"uid":"a031562"}
+[2022-08-28T11:32:23.489553-04:00] slim-app.INFO:  Section name updated to updatee [] {"uid":"2ccdb67"}
+[2022-08-28T11:33:33.918104-04:00] slim-app.INFO:  Section name updated to updatee [] {"uid":"f06eaef"}
+[2022-08-28T11:33:35.011534-04:00] slim-app.INFO:  Section name updated to updatee [] {"uid":"b44201b"}
+[2022-08-28T11:33:40.625868-04:00] slim-app.INFO:  Section name updated to update [] {"uid":"811716d"}
+[2022-08-28T11:33:42.390118-04:00] slim-app.INFO:  Section name updated to updatse [] {"uid":"7545d55"}
+[2022-08-28T11:33:43.346816-04:00] slim-app.INFO:  Section name updated to updatse [] {"uid":"0e0575c"}
+[2022-08-29T16:30:15.561043-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"e3819a9"}
+[2022-08-29T16:30:24.597334-04:00] slim-app.INFO:  Section name updated to esas [] {"uid":"591522f"}

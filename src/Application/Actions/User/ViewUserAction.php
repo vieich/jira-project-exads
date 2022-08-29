@@ -3,8 +3,13 @@ declare(strict_types=1);
 
 namespace App\Application\Actions\User;
 
+use App\Domain\Permission\Exception\PermissionAuthTokenException;
+use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
+use App\Domain\Permission\Permission;
+use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use OpenApi\Annotations as OA;
+use Slim\Exception\HttpBadRequestException;
 
 class ViewUserAction extends UserAction
 {
@@ -75,19 +80,20 @@ class ViewUserAction extends UserAction
      *          )
      *     )
      * )
+     * @throws HttpBadRequestException
+     * @throws PermissionNoAuthorizationException
+     * @throws PermissionAuthTokenException
+     * @throws UserNotFoundException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
         $userId = (int) $this->resolveArg('id');
+        $operation[] = 'read';
 
-        $permissionRepo = $this->permissionRepository;
         $userRepo = $this->userRepository;
-        $userValidator = $this->userValidator;
 
-        $userValidator->checkIfHeaderIsMissing($auth_token);
-        $permissionRepo->checkIfAuthTokenIsValid($auth_token);
-        $permissionRepo->checkIfUserCanDoOperation($auth_token, 'read');
+        (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $user = $userRepo->findUserOfId($userId);
 
