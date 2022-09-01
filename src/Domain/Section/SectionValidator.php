@@ -8,6 +8,9 @@ use App\Domain\Validator;
 
 class SectionValidator extends Validator
 {
+    /**
+     * @throws SectionNameFormatException
+     */
     public function checkIfSectionNameIsValid($tabName): void
     {
         if (!preg_match("/^[A-Za-z0-9 ]{2,8}$/", $tabName)) {
@@ -15,6 +18,9 @@ class SectionValidator extends Validator
         }
     }
 
+    /**
+     * @throws SectionTabIdFormatException
+     */
     public function checkIfTabIdIsValid($tabId): void
     {
         if (!is_int($tabId)) {

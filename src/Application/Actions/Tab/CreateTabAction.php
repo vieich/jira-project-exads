@@ -30,7 +30,7 @@ class CreateTabAction extends TabAction
      *     @OA\RequestBody (
      *          @OA\JsonContent(
      *               type = "object",
-     *               @OA\Property (property="tabName", type="string", example = "Tab"),
+     *               @OA\Property (property="name", type="string", example = "Tab"),
      *               @OA\Property (property="ticketId", type="integer", example = 1)
      *          )
      *     ),
@@ -54,7 +54,7 @@ class CreateTabAction extends TabAction
      *               @OA\Property (property="statusCode", type="integer", example = 400),
      *               @OA\Property (property="error", type="object",
      *                      @OA\Property (property="type", type="string", example = "BAD_REQUEST"),
-     *                      @OA\Property (property="description", type="string", example = "Payload is not valid, is missing the tabName field.")
+     *                      @OA\Property (property="description", type="string", example = "Payload is not valid, is missing the name field.")
      *                      )
      *          )
      *     ),
@@ -93,11 +93,11 @@ class CreateTabAction extends TabAction
         $auth_token = $this->getAuthTokenHeader();
 
         $data = $this->getFormData();
-        $tabName = $data['tabName'] ?? null;
+        $name = $data['name'] ?? null;
         $ticketId = $data['ticketId'] ?? null;
         $operation[] = 'create';
 
-        $args = compact('tabName', 'ticketId');
+        $args = compact('name', 'ticketId');
 
         $tabValidator = $this->tabValidator;
         $tabRepo = $this->tabRepository;
@@ -105,9 +105,9 @@ class CreateTabAction extends TabAction
         (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $tabValidator->checkIfPayloadStructureIsValid($args);
-        $tabValidator->checkIfTabNameIsValid($tabName);
+        $tabValidator->checkIfTabNameIsValid($name);
 
-        $tab = $tabRepo->createTab($tabName, $ticketId);
+        $tab = $tabRepo->createTab($name, $ticketId);
 
         $this->logger->info('Tab with id ' . $tab->getId() . ' created.');
 

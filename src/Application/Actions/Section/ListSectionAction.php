@@ -38,7 +38,7 @@ class ListSectionAction extends SectionAction
      *               @OA\Property (property="data", type="array",
      *                      @OA\Items(
      *                      @OA\Property (property="id", type="integer", example = 1),
-     *                      @OA\Property (property="sectionName", type="string", example = "SectionName"),
+     *                      @OA\Property (property="name", type="string", example = "SectionName"),
      *                      @OA\Property (property="tabId", type="integer", example = 1),
      *                      @OA\Property (property="isActive", type="boolean", example = true)
      *                          )

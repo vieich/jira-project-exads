@@ -8,7 +8,6 @@ use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\Permission\Permission;
 use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
-use OpenApi\Annotations as OA;
 use Slim\Exception\HttpBadRequestException;
 
 class ViewUserAction extends UserAction
@@ -25,7 +24,7 @@ class ViewUserAction extends UserAction
      *          @OA\Schema (type = "integer"),
      *          description = "Id of the user",
      *          required = true,
-     *      ),
+     *     ),
      *     @OA\Parameter (
      *          name = "Auth-Token",
      *          in = "header",

@@ -16,7 +16,7 @@ class DeleteTicketAction extends TicketAction
      *     path="/tickets/{id}",
      *     tags= {"Tickets"},
      *     summary="Requires Authentication",
-     *     description="Delete a ticket, if success return it",
+     *     description="Delete a Ticket, if success return it",
      *     @OA\Parameter (
      *          name = "Auth-Token",
      *          in = "header",
@@ -28,7 +28,7 @@ class DeleteTicketAction extends TicketAction
      *          name = "id",
      *          in = "path",
      *          @OA\Schema (type = "integer"),
-     *          description = "Id of the ticket",
+     *          description = "Id of the Ticket",
      *          required = true,
      *     ),
      *     @OA\Response(
@@ -71,7 +71,7 @@ class DeleteTicketAction extends TicketAction
      *               @OA\Property (property="statusCode", type="integer", example = 404),
      *               @OA\Property (property="error", type="object",
      *                      @OA\Property (property="type", type="string", example = "RESOURCE_NOT_FOUND"),
-     *                      @OA\Property (property="description", type="string", example = "The ticket does not exist.")
+     *                      @OA\Property (property="description", type="string", example = "The Ticket does not exist.")
      *                      )
      *          )
      *     )

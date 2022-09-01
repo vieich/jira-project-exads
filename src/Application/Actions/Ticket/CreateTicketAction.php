@@ -17,7 +17,7 @@ class CreateTicketAction extends TicketAction
      *     path="/tickets",
      *     tags= {"Tickets"},
      *     summary="Requires Authentication",
-     *     description="Create a ticket, if success return it",
+     *     description="Create a Ticket, if success return it",
      *     @OA\Parameter (
      *          name = "Auth-Token",
      *          in = "header",
@@ -28,7 +28,7 @@ class CreateTicketAction extends TicketAction
      *     @OA\RequestBody (
      *          @OA\JsonContent(
      *               type = "object",
-     *               @OA\Property (property="ticketName", type="string"),
+     *               @OA\Property (property="name", type="string"),
      *          )
      *     ),
      *     @OA\Response(
@@ -51,7 +51,7 @@ class CreateTicketAction extends TicketAction
      *               @OA\Property (property="statusCode", type="integer", example = 400),
      *               @OA\Property (property="error", type="object",
      *                      @OA\Property (property="type", type="string", example = "BAD_REQUEST"),
-     *                      @OA\Property (property="description", type="string", example = "Payload is not valid, is missing the ticketName field.")
+     *                      @OA\Property (property="description", type="string", example = "Payload is not valid, is missing the name field.")
      *                      )
      *          )
      *     ),
@@ -89,10 +89,10 @@ class CreateTicketAction extends TicketAction
     {
         $auth_token = $this->getAuthTokenHeader();
         $data = $this->getFormData();
-        $ticketName = $data['ticketName'] ?? null;
+        $name = $data['name'] ?? null;
         $operation[] = 'create';
 
-        $args = compact('ticketName');
+        $args = compact('name');
 
         $ticketValidator = $this->ticketValidator;
         $ticketRepo = $this->ticketRepository;
@@ -101,10 +101,10 @@ class CreateTicketAction extends TicketAction
         (new Permission($permissionRepo))->checkIfHasAccess($auth_token, $operation);
 
         $ticketValidator->checkIfPayloadStructureIsValid($args);
-        $ticketValidator->checkIfTicketNameIsValid($ticketName);
+        $ticketValidator->checkIfTicketNameIsValid($name);
 
         $user = $permissionRepo->getUserByToken($auth_token);
-        $ticket = $ticketRepo->createTicket($ticketName, $user->getId());
+        $ticket = $ticketRepo->createTicket($name, $user->getId());
 
         $this->logger->info('Ticket with id ' . $ticket->getId() . ' created.');
 

@@ -13,13 +13,12 @@ use Slim\Exception\HttpBadRequestException;
 
 class UpdateSectionAction extends SectionAction
 {
-
     /**
      * @OA\Patch(
      *     path="/sections/{id}",
      *     tags= {"Sections"},
      *     summary="Requires Authentication",
-     *     description="Update a section, if success return it",
+     *     description="Update a Section, if success return it",
      *     @OA\Parameter (
      *          name = "Auth-Token",
      *          in = "header",
@@ -31,13 +30,13 @@ class UpdateSectionAction extends SectionAction
      *          name = "id",
      *          in = "path",
      *          @OA\Schema (type = "integer"),
-     *          description = "Id of the tab",
+     *          description = "Id of the Section",
      *          required = true,
      *      ),
      *     @OA\RequestBody (
      *          @OA\JsonContent(
      *               type = "object",
-     *               @OA\Property (property="sectionName", type="string"),
+     *               @OA\Property (property="name", type="string"),
      *          )
      *     ),
      *     @OA\Response(
@@ -47,7 +46,7 @@ class UpdateSectionAction extends SectionAction
      *               @OA\Property (property="statusCode", type="integer", example = 200),
      *               @OA\Property (property="data", type="object",
      *                      @OA\Property (property="id", type="integer", example = 1),
-     *                      @OA\Property (property="sectionName", type="string", example = "SectionName"),
+     *                      @OA\Property (property="name", type="string", example = "SectionName"),
      *                      @OA\Property (property="tabId", type="integer", example = 1),
      *                      @OA\Property (property="isActive", type="boolean", example = true)
      *                      )
@@ -60,7 +59,7 @@ class UpdateSectionAction extends SectionAction
      *               @OA\Property (property="statusCode", type="integer", example = 400),
      *               @OA\Property (property="error", type="object",
      *                      @OA\Property (property="type", type="string", example = "BAD_REQUEST"),
-     *                      @OA\Property (property="description", type="string", example = "Payload is not valid, is missing the sectionName field.")
+     *                      @OA\Property (property="description", type="string", example = "Payload is not valid, is missing the name field.")
      *                      )
      *          )
      *     ),
@@ -93,7 +92,7 @@ class UpdateSectionAction extends SectionAction
      *               @OA\Property (property="statusCode", type="integer", example = 404),
      *               @OA\Property (property="error", type="object",
      *                      @OA\Property (property="type", type="string", example = "RESOURCE_NOT_FOUND"),
-     *                      @OA\Property (property="description", type="string", example = "The section does not exist.")
+     *                      @OA\Property (property="description", type="string", example = "The Section does not exist.")
      *                      )
      *              )
      *          )
@@ -112,9 +111,9 @@ class UpdateSectionAction extends SectionAction
         $operation[] = 'read';
 
         $data = $this->getFormData();
-        $sectionName = $data['sectionName'] ?? null;
+        $name = $data['name'] ?? null;
 
-        $args = compact('sectionName');
+        $args = compact('name');
 
         $sectionValidator = $this->sectionValidator;
         $sectionRepo = $this->sectionRepository;
@@ -122,11 +121,11 @@ class UpdateSectionAction extends SectionAction
         (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $sectionValidator->checkIfPayloadStructureIsValid($args);
-        $sectionValidator->checkIfSectionNameIsValid($sectionName);
+        $sectionValidator->checkIfSectionNameIsValid($name);
 
-        $section = $sectionRepo->updateSection($sectionId, $sectionName);
+        $section = $sectionRepo->updateSection($sectionId, $name);
 
-        $this->logger->info(' Section name updated to ' . $sectionName);
+        $this->logger->info(' Section name updated to ' . $name);
 
         return $this->respondWithData($section);
     }

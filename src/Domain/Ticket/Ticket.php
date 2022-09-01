@@ -38,7 +38,7 @@ class Ticket implements \JsonSerializable
         return $this->isActive;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,

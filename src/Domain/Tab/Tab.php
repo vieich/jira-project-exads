@@ -42,7 +42,7 @@ class Tab implements \JsonSerializable
         return $this->is_active;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,

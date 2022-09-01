@@ -143,6 +143,7 @@ class UserRepo extends Database implements UserRepository
         ];
 
         $queryUserId = 'SELECT id FROM users WHERE name = :name AND is_active = true';
+
         $queryCreateToken = "INSERT INTO tokens (token, user_id) VALUE (:token, :userId)";
 
         $token = hash('sha256', uniqid());
@@ -176,21 +177,18 @@ class UserRepo extends Database implements UserRepository
     }
 
     /**
-     * @throws UserNotFoundException
      * @throws UserNoAuthorizationException
      */
     public function checkIfUserPasswordIsCorrect(string $username, string $password): void
     {
         $query = 'SELECT password FROM users WHERE name = :username AND is_active = true';
-        try {
-            $stmt = $this->connection->prepare($query);
-                $stmt->bindValue('username', $username);
-                $stmt->execute();
 
-                $hashPassword = $stmt->fetch();
-        } catch (\PDOException $e) {
-            throw new UserNotFoundException('Wrong username or password.');
-        }
+        $stmt = $this->connection->prepare($query);
+        $stmt->bindValue('username', $username);
+        $stmt->execute();
+
+        $hashPassword = $stmt->fetch();
+
         if (!password_verify($password, $hashPassword['password'])) {
             throw new UserNoAuthorizationException('Wrong username or password.');
         }
@@ -202,13 +200,11 @@ class UserRepo extends Database implements UserRepository
     public function checkIfUserExists($username): User
     {
         $query = "SELECT id, name, role, is_active, password FROM users WHERE name = :name AND is_active = true";
-        try {
-            $stmt = $this->getConnection()->prepare($query);
-            $stmt->bindValue('name', $username);
-            $stmt->execute();
-        } catch (\PDOException $e) {
-            throw new UserNotFoundException('Usefdsfdsfdkjshfjkdshfr ' . $username . ' does not exist.');
-        }
+
+        $stmt = $this->getConnection()->prepare($query);
+        $stmt->bindValue('name', $username);
+        $stmt->execute();
+
         $user = $stmt->fetch();
 
         if (!$user) {
@@ -224,6 +220,9 @@ class UserRepo extends Database implements UserRepository
         );
     }
 
+    /**
+     * @throws UserNotFoundException
+     */
     public function updateUserUsername(int $userId, string $username): User
     {
         $query = 'UPDATE users SET name = :name WHERE id = :id';
@@ -236,6 +235,11 @@ class UserRepo extends Database implements UserRepository
         return $this->findUserOfId($userId);
     }
 
+    /**
+     * @throws UserOperationException
+     * @throws UserNotFoundException
+     * @throws UserNoAuthorizationException
+     */
     public function updateUserPassword(int $userId, string $oldPassword, string $newPassword): array
     {
         $user = $this->findUserOfId($userId);

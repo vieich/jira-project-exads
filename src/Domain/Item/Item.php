@@ -44,13 +44,13 @@ class Item implements \JsonSerializable
         return $this->isActive;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'sectionId' => $this->sectionId,
             'status' => $this->status,
+            'sectionId' => $this->sectionId,
             'isActive' => $this->isActive
         ];
     }

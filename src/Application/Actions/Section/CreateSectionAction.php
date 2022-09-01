@@ -30,7 +30,7 @@ class CreateSectionAction extends SectionAction
      *     @OA\RequestBody (
      *          @OA\JsonContent(
      *               type = "object",
-     *               @OA\Property (property="sectionName", type="string", example = "Section"),
+     *               @OA\Property (property="name", type="string", example = "Section"),
      *               @OA\Property (property="tabId", type="integer", example = 1)
      *          )
      *     ),
@@ -41,7 +41,7 @@ class CreateSectionAction extends SectionAction
      *               @OA\Property (property="statusCode", type="integer", example = 200),
      *               @OA\Property (property="data", type="object",
      *                      @OA\Property (property="id", type="integer", example = 1),
-     *                      @OA\Property (property="sectionName", type="string", example = "SectionName"),
+     *                      @OA\Property (property="name", type="string", example = "SectionName"),
      *                      @OA\Property (property="tabId", type="integer", example = 1),
      *                      @OA\Property (property="isActive", type="boolean", example = true)
      *                      )
@@ -54,7 +54,7 @@ class CreateSectionAction extends SectionAction
      *               @OA\Property (property="statusCode", type="integer", example = 400),
      *               @OA\Property (property="error", type="object",
      *                      @OA\Property (property="type", type="string", example = "BAD_REQUEST"),
-     *                      @OA\Property (property="description", type="string", example = "Payload is not valid, is missing the sectionName field.")
+     *                      @OA\Property (property="description", type="string", example = "Payload is not valid, is missing the name field.")
      *                      )
      *          )
      *     ),
@@ -93,11 +93,11 @@ class CreateSectionAction extends SectionAction
         $auth_token = $this->getAuthTokenHeader();
 
         $data = $this->getFormData();
-        $sectionName = $data['sectionName'] ?? null;
+        $name = $data['name'] ?? null;
         $tabId = $data['tabId'] ?? null;
         $operation[] = 'read';
 
-        $args = compact('sectionName', 'tabId');
+        $args = compact('name', 'tabId');
 
         $sectionValidator = $this->sectionValidator;
         $sectionRepo = $this->sectionRepository;
@@ -105,10 +105,10 @@ class CreateSectionAction extends SectionAction
         (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $sectionValidator->checkIfPayloadStructureIsValid($args);
-        $sectionValidator->checkIfSectionNameIsValid($sectionName);
+        $sectionValidator->checkIfSectionNameIsValid($name);
         $sectionValidator->checkIfTabIdIsValid($tabId);
 
-        $section = $sectionRepo->createSection($sectionName, $tabId);
+        $section = $sectionRepo->createSection($name, $tabId);
 
         $this->logger->info('Section with id ' . $section->getId() . ' created.');
 

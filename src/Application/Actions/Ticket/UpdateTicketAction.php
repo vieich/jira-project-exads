@@ -18,7 +18,7 @@ class UpdateTicketAction extends TicketAction
      *     path="/tickets/{id}",
      *     tags= {"Tickets"},
      *     summary="Requires Authentication",
-     *     description="Update a ticket, if success return it",
+     *     description="Update a Ticket, if success return it",
      *     @OA\Parameter (
      *          name = "Auth-Token",
      *          in = "header",
@@ -30,13 +30,13 @@ class UpdateTicketAction extends TicketAction
      *          name = "id",
      *          in = "path",
      *          @OA\Schema (type = "integer"),
-     *          description = "Id of the ticket",
+     *          description = "Id of the Ticket",
      *          required = true,
      *      ),
      *     @OA\RequestBody (
      *          @OA\JsonContent(
      *               type = "object",
-     *               @OA\Property (property="ticketName", type="string"),
+     *               @OA\Property (property="name", type="string"),
      *          )
      *     ),
      *     @OA\Response(
@@ -59,7 +59,7 @@ class UpdateTicketAction extends TicketAction
      *               @OA\Property (property="statusCode", type="integer", example = 400),
      *               @OA\Property (property="error", type="object",
      *                      @OA\Property (property="type", type="string", example = "BAD_REQUEST"),
-     *                      @OA\Property (property="description", type="string", example = "Payload is not valid, is missing the ticketName field.")
+     *                      @OA\Property (property="description", type="string", example = "Payload is not valid, is missing the name field.")
      *                      )
      *          )
      *     ),
@@ -92,7 +92,7 @@ class UpdateTicketAction extends TicketAction
      *               @OA\Property (property="statusCode", type="integer", example = 404),
      *               @OA\Property (property="error", type="object",
      *                      @OA\Property (property="type", type="string", example = "RESOURCE_NOT_FOUND"),
-     *                      @OA\Property (property="description", type="string", example = "The ticket does not exist.")
+     *                      @OA\Property (property="description", type="string", example = "The Ticket does not exist.")
      *                      )
      *          )
      *     )
@@ -110,10 +110,10 @@ class UpdateTicketAction extends TicketAction
         $ticketId = (int) $this->resolveArg('id');
 
         $data = $this->getFormData();
-        $ticketName = $data['ticketName'] ?? null;
+        $name = $data['name'] ?? null;
         $operation[] = 'update';
 
-        $valuesToUpdate = compact('ticketName');
+        $valuesToUpdate = compact('name');
 
         $ticketValidator = $this->ticketValidator;
         $ticketRepo = $this->ticketRepository;
@@ -121,11 +121,11 @@ class UpdateTicketAction extends TicketAction
         (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $ticketValidator->checkIfPayloadStructureIsValid($valuesToUpdate);
-        $ticketValidator->checkIfTicketNameIsValid($ticketName);
+        $ticketValidator->checkIfTicketNameIsValid($name);
 
-        $ticket = $ticketRepo->updateTicket($ticketId, $ticketName);
+        $ticket = $ticketRepo->updateTicket($ticketId, $name);
 
-        $this->logger->info('Ticket with id ' . $ticketId . ' name was updated to ' . $ticketName);
+        $this->logger->info('Ticket with id ' . $ticketId . ' name was updated to ' . $name);
 
         return $this->respondWithData($ticket);
     }

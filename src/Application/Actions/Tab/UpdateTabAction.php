@@ -18,7 +18,7 @@ class UpdateTabAction extends TabAction
      *     path="/tab/{id}",
      *     tags= {"Tabs"},
      *     summary="Requires Authentication",
-     *     description="Update a tab, if success return it",
+     *     description="Update a Tab, if success return it",
      *     @OA\Parameter (
      *          name = "Auth-Token",
      *          in = "header",
@@ -30,13 +30,13 @@ class UpdateTabAction extends TabAction
      *          name = "id",
      *          in = "path",
      *          @OA\Schema (type = "integer"),
-     *          description = "Id of the ticket",
+     *          description = "Id of the Tab",
      *          required = true,
      *      ),
      *     @OA\RequestBody (
      *          @OA\JsonContent(
      *               type = "object",
-     *               @OA\Property (property="tabName", type="string"),
+     *               @OA\Property (property="name", type="string"),
      *          )
      *     ),
      *     @OA\Response(
@@ -46,7 +46,7 @@ class UpdateTabAction extends TabAction
      *               @OA\Property (property="statusCode", type="integer", example = 200),
      *               @OA\Property (property="data", type="object",
      *                      @OA\Property (property="id", type="integer", example = 1),
-     *                      @OA\Property (property="name", type="string", example = "TicketName"),
+     *                      @OA\Property (property="name", type="string", example = "Name"),
      *                      @OA\Property (property="ticketId", type="integer", example = 1),
      *                      @OA\Property (property="isActive", type="boolean", example = true)
      *                      )
@@ -59,7 +59,7 @@ class UpdateTabAction extends TabAction
      *               @OA\Property (property="statusCode", type="integer", example = 400),
      *               @OA\Property (property="error", type="object",
      *                      @OA\Property (property="type", type="string", example = "BAD_REQUEST"),
-     *                      @OA\Property (property="description", type="string", example = "Payload is not valid, is missing the ticketName field.")
+     *                      @OA\Property (property="description", type="string", example = "Payload is not valid, is missing the name field.")
      *                      )
      *          )
      *     ),
@@ -92,7 +92,7 @@ class UpdateTabAction extends TabAction
      *               @OA\Property (property="statusCode", type="integer", example = 404),
      *               @OA\Property (property="error", type="object",
      *                      @OA\Property (property="type", type="string", example = "RESOURCE_NOT_FOUND"),
-     *                      @OA\Property (property="description", type="string", example = "The tab does not exist.")
+     *                      @OA\Property (property="description", type="string", example = "The Tab does not exist.")
      *                      )
      *              )
      *          )

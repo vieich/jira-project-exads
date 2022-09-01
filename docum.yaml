@@ -4,8 +4,67 @@ info:
   version: '0.1'
 servers:
   -
-    url: 'https://sandbox.exads.rocks/'
+    url: 'http://sandbox.exads.rocks/'
 paths:
+  '/items/{id}':
+    get:
+      tags:
+        - Items
+      summary: 'Requires Authentication'
+      description: 'Search for specific Item by id, if found return it'
+      operationId: 4360ad8099197be7423a65d32fe9f192
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: id
+          in: path
+          description: 'Id of the Item'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: itemName }, sectionId: { type: integer, example: 1 }, status: { type: string, example: 'to do' }, isActive: { type: boolean, example: true } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The Item does not exist.' } }, type: object }
+                type: object
   /sections:
     get:
       tags:
@@ -122,6 +181,64 @@ paths:
                   error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
                 type: object
   '/sections/{id}':
+    get:
+      tags:
+        - Sections
+      summary: 'Requires Authentication'
+      description: 'Search for specific Section by id, if found return it'
+      operationId: d3e24a0e15354d1b242024cb40b4540e
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: id
+          in: path
+          description: 'Id of the section'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { sectionId: { type: integer, example: 1 }, sectionName: { type: string, example: SectionName }, ticketId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The Section does not exist.' } }, type: object }
+                type: object
     delete:
       tags:
         - Sections

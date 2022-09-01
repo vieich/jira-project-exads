@@ -162,5 +162,4 @@ class SectionRepo extends Database implements SectionRepository
             throw new SectionNoParentException();
         }
     }
-
 }

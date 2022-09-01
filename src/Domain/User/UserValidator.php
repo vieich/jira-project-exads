@@ -10,6 +10,9 @@ use App\Domain\Validator;
 
 class UserValidator extends Validator
 {
+    /**
+     * @throws UserUsernameFormatException
+     */
     public function checkIfUsernameIsValid(string $name): void
     {
         /*
@@ -22,6 +25,9 @@ class UserValidator extends Validator
         }
     }
 
+    /**
+     * @throws UserPasswordFormatException
+     */
     public function checkIfPasswordFormatIsValid(string $password): void
     {
         if (!preg_match("/^(?=.*?\d)[0-9a-zA-Z]{8,}$/", $password)) {
@@ -29,13 +35,19 @@ class UserValidator extends Validator
         }
     }
 
+    /**
+     * @throws UserPasswordFormatException
+     */
     public function checkIfPasswordAndCPasswordMatch(string $password, string $cpassword): void
     {
         if ($password !== $cpassword) {
-            throw new UserPasswordFormatException('Password and confirm_password fields doenst match.');
+            throw new UserPasswordFormatException('Password and confirm_password fields does not match.');
         }
     }
 
+    /**
+     * @throws UserRoleException
+     */
     public function checkIfRoleIsValid(string $userRole): void
     {
         $userRoleLowerCase = strtolower($userRole);
@@ -45,6 +57,9 @@ class UserValidator extends Validator
         }
     }
 
+    /**
+     * @throws UserNoAuthorizationException
+     */
     public function checkIfUserTokenMatchTheUserId(int $userId, int $userIdByToken): void
     {
         if ($userId != $userIdByToken) {

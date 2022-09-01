@@ -8,6 +8,9 @@ use App\Domain\Validator;
 
 class ItemValidator extends Validator
 {
+    /**
+     * @throws ItemNameFormatException
+     */
     public function checkIfItemNameIsValid($itemName): void
     {
         if (!preg_match("/^[A-Za-z0-9 ]{2,15}$/", $itemName)) {
@@ -15,6 +18,9 @@ class ItemValidator extends Validator
         }
     }
 
+    /**
+     * @throws ItemSectionIdFormatException
+     */
     public function checkIfSectionIdIsValid($sectionId): void
     {
         if (!is_int($sectionId)) {

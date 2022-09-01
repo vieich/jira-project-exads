@@ -76,6 +76,9 @@ class PermissionRepo extends Database
         }
     }
 
+    /**
+     * @throws ItemStatusException
+     */
     public function checkIfItemStatusIsValidAndReturnId(string $statusName): int
     {
         $query = 'SELECT id FROM status WHERE name = :name';
@@ -86,7 +89,9 @@ class PermissionRepo extends Database
         $statusId = $stmt->fetch();
 
         if (!$statusId) {
-            throw new ItemStatusException('The status that you trying to set is wrong, available status : to do, in progress, blocked,skipped,completed');
+            throw new ItemStatusException(
+                'Invalid status, available status: to do, in progress, blocked, skipped, completed'
+            );
         }
         return $statusId['id'];
     }

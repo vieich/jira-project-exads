@@ -22,7 +22,7 @@ use Slim\Exception\HttpUnauthorizedException;
 
 /**
  * @OA\Info(title="My First API", version="0.1"),
- * @OA\Server(url="https://sandbox.exads.rocks/")
+ * @OA\Server(url="http://sandbox.exads.rocks/")
  */
 abstract class Action
 {

@@ -4,7 +4,6 @@ namespace App\Application\Actions\User;
 
 use App\Domain\DomainException\DomainPayloadStructureValidatorException;
 use App\Domain\Permission\Exception\PermissionAuthTokenException;
-use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\User\Exception\UserNoAuthorizationException;
 use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -75,7 +74,6 @@ class LoginUserAction extends UserAction
         $userRepo = $this->userRepository;
 
         $userValidator->checkIfPayloadStructureIsValid($args);
-        $userRepo->checkIfUserExists($username);
         $userRepo->checkIfUserPasswordIsCorrect($username, $password);
 
         $getAuthToken = $this->permissionRepository->getAuthToken($username);

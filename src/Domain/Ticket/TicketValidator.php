@@ -7,6 +7,9 @@ use App\Domain\Validator;
 
 class TicketValidator extends Validator
 {
+    /**
+     * @throws TicketNameFormatException
+     */
     public function checkIfTicketNameIsValid($ticketName): void
     {
         if (!preg_match("/^[A-Za-z]{2,25}$/", $ticketName)) {

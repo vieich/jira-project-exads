@@ -32,7 +32,7 @@ class ListTabAction extends TabAction
      *               @OA\Property (property="data", type="array",
      *                      @OA\Items(
      *                      @OA\Property (property="id", type="integer", example = 1),
-     *                      @OA\Property (property="name", type="string", example = "TicketName"),
+     *                      @OA\Property (property="name", type="string", example = "Name"),
      *                      @OA\Property (property="ticketId", type="integer", example = 1),
      *                      @OA\Property (property="isActive", type="boolean", example = true)
      *                          )

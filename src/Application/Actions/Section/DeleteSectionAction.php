@@ -29,7 +29,7 @@ class DeleteSectionAction extends SectionAction
      *          name = "id",
      *          in = "path",
      *          @OA\Schema (type = "integer"),
-     *          description = "Id of the tab",
+     *          description = "Id of the Section",
      *          required = true,
      *     ),
      *     @OA\Response(
@@ -72,7 +72,7 @@ class DeleteSectionAction extends SectionAction
      *               @OA\Property (property="statusCode", type="integer", example = 404),
      *               @OA\Property (property="error", type="object",
      *                      @OA\Property (property="type", type="string", example = "RESOURCE_NOT_FOUND"),
-     *                      @OA\Property (property="description", type="string", example = "The section does not exist.")
+     *                      @OA\Property (property="description", type="string", example = "The Section does not exist.")
      *                      )
      *          )
      *     )
