@@ -30,7 +30,7 @@ class UserValidator extends Validator
      */
     public function checkIfPasswordFormatIsValid(string $password): void
     {
-        if (!preg_match("/^(?=.*?\d)[0-9a-zA-Z]{8,}$/", $password)) {
+        if (!preg_match("/^(?=.*?\d)[0-9a-zA-Z]{8,32}$/", $password)) {
             throw new UserPasswordFormatException();
         }
     }

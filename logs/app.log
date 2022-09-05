@@ -166,3 +166,8 @@
 [2022-09-01T12:33:56.063374-04:00] slim-app.INFO: List of items viewed. [] {"uid":"e232339"}
 [2022-09-01T12:35:31.679931-04:00] slim-app.INFO: Item with id 9 deleted. [] {"uid":"3f23690"}
 [2022-09-01T12:36:58.749002-04:00] slim-app.INFO: Item with id 11 created. [] {"uid":"6f15497"}
+[2022-09-02T05:41:50.642333-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"76b801b"}
+[2022-09-02T05:43:19.101347-04:00] slim-app.INFO: Users list was viewed. [] {"uid":"8c0b57c"}
+[2022-09-02T06:12:17.666773-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"ceb07f7"}
+[2022-09-02T09:09:26.646281-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"9b79d68"}
+[2022-09-02T09:10:22.480052-04:00] slim-app.INFO: Users list was viewed. [] {"uid":"032a9f4"}

@@ -4,8 +4,123 @@ info:
   version: '0.1'
 servers:
   -
-    url: 'http://sandbox.exads.rocks/'
+    url: 'https://sandbox.exads.rocks/'
 paths:
+  /items:
+    get:
+      tags:
+        - Items
+      summary: 'Requires Authentication'
+      description: 'Search for all Items, if found return it'
+      operationId: b8cb5827c1a9a4acd294c8468d986612
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                showDeleted:
+                  type: boolean
+                  example: true
+              type: object
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { type: array, items: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: itemName }, status: { type: string, example: 'to do' }, sectionId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object } }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+    post:
+      tags:
+        - Items
+      summary: 'Require Authentication'
+      description: 'Create a Item, if success return it'
+      operationId: ab07ad2bfca11186b7e1b01bebf09968
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  example: name
+                sectionId:
+                  type: integer
+                  example: 1
+              type: object
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: name }, status: { type: string, example: 'to do' }, sectionId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                type: object
+        '400':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 400 }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the name field.' } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
   '/items/{id}':
     get:
       tags:
@@ -36,7 +151,142 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 200 }
-                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: itemName }, sectionId: { type: integer, example: 1 }, status: { type: string, example: 'to do' }, isActive: { type: boolean, example: true } }, type: object }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: itemName }, status: { type: string, example: 'to do' }, sectionId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The Item does not exist.' } }, type: object }
+                type: object
+    delete:
+      tags:
+        - Items
+      summary: 'Requires Authentication'
+      description: 'Delete a Item, if success return it'
+      operationId: e3cec50324b2cc6d5048b95e358b7e96
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: id
+          in: path
+          description: 'Id of the Item'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { message: { type: string, example: 'Item with id 5 deleted' }, hasSuccess: { type: boolean, example: true } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 404 }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The Item does not exist.' } }, type: object }
+                type: object
+    patch:
+      tags:
+        - Items
+      summary: 'Requires Authentication'
+      description: 'Update a item, if success return it'
+      operationId: 22c8ecd093d631510fe9d22ff293ec88
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: id
+          in: path
+          description: 'Id of the Item'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                status:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: itemName }, status: { type: string, example: status }, sectionId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                type: object
+        '400':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 400 }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the status field.' } }, type: object }
                 type: object
         '401':
           description: ok
@@ -97,7 +347,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 200 }
-                  data: { type: array, items: { properties: { id: { type: integer, example: 1 }, sectionName: { type: string, example: SectionName }, tabId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object } }
+                  data: { type: array, items: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: SectionName }, tabId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object } }
                 type: object
         '401':
           description: ok
@@ -136,7 +386,7 @@ paths:
           application/json:
             schema:
               properties:
-                sectionName:
+                name:
                   type: string
                   example: Section
                 tabId:
@@ -151,7 +401,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 200 }
-                  data: { properties: { id: { type: integer, example: 1 }, sectionName: { type: string, example: SectionName }, tabId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: SectionName }, tabId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
                 type: object
         '400':
           description: ok
@@ -160,7 +410,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 400 }
-                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the sectionName field.' } }, type: object }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the name field.' } }, type: object }
                 type: object
         '401':
           description: ok
@@ -198,7 +448,7 @@ paths:
         -
           name: id
           in: path
-          description: 'Id of the section'
+          description: 'Id of the Section'
           required: true
           schema:
             type: integer
@@ -210,7 +460,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 200 }
-                  data: { properties: { sectionId: { type: integer, example: 1 }, sectionName: { type: string, example: SectionName }, ticketId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: SectionName }, tabId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
                 type: object
         '401':
           description: ok
@@ -256,7 +506,7 @@ paths:
         -
           name: id
           in: path
-          description: 'Id of the tab'
+          description: 'Id of the Section'
           required: true
           schema:
             type: integer
@@ -295,13 +545,13 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 404 }
-                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The section does not exist.' } }, type: object }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The Section does not exist.' } }, type: object }
                 type: object
     patch:
       tags:
         - Sections
       summary: 'Requires Authentication'
-      description: 'Update a section, if success return it'
+      description: 'Update a Section, if success return it'
       operationId: 4d4de60c25d64339740358cb480f327d
       parameters:
         -
@@ -314,7 +564,7 @@ paths:
         -
           name: id
           in: path
-          description: 'Id of the tab'
+          description: 'Id of the Section'
           required: true
           schema:
             type: integer
@@ -323,7 +573,7 @@ paths:
           application/json:
             schema:
               properties:
-                sectionName:
+                name:
                   type: string
               type: object
       responses:
@@ -334,7 +584,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 200 }
-                  data: { properties: { id: { type: integer, example: 1 }, sectionName: { type: string, example: SectionName }, tabId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: SectionName }, tabId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
                 type: object
         '400':
           description: ok
@@ -343,7 +593,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 400 }
-                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the sectionName field.' } }, type: object }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the name field.' } }, type: object }
                 type: object
         '401':
           description: ok
@@ -370,7 +620,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 404 }
-                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The section does not exist.' } }, type: object }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The Section does not exist.' } }, type: object }
                 type: object
   /tabs:
     get:
@@ -395,7 +645,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer }
-                  data: { type: array, items: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: TicketName }, ticketId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object } }
+                  data: { type: array, items: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: Name }, ticketId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object } }
                 type: object
         '401':
           description: ok
@@ -434,7 +684,7 @@ paths:
           application/json:
             schema:
               properties:
-                tabName:
+                name:
                   type: string
                   example: Tab
                 ticketId:
@@ -458,7 +708,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 400 }
-                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the tabName field.' } }, type: object }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the name field.' } }, type: object }
                 type: object
         '401':
           description: ok
@@ -496,7 +746,7 @@ paths:
         -
           name: id
           in: path
-          description: 'Id of the ticket'
+          description: 'Id of the Tab'
           required: true
           schema:
             type: integer
@@ -508,7 +758,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 200 }
-                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: TicketName }, ticketId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: Name }, ticketId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
                 type: object
         '401':
           description: ok
@@ -554,7 +804,7 @@ paths:
         -
           name: id
           in: path
-          description: 'Id of the tab'
+          description: 'Id of the Tab'
           required: true
           schema:
             type: integer
@@ -593,14 +843,14 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 404 }
-                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The tab does not exist.' } }, type: object }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The Tab does not exist.' } }, type: object }
                 type: object
   '/tab/{id}':
     patch:
       tags:
         - Tabs
       summary: 'Requires Authentication'
-      description: 'Update a tab, if success return it'
+      description: 'Update a Tab, if success return it'
       operationId: 0a95d3aa6265d18fffc84dba0fe15c63
       parameters:
         -
@@ -613,7 +863,7 @@ paths:
         -
           name: id
           in: path
-          description: 'Id of the ticket'
+          description: 'Id of the Tab'
           required: true
           schema:
             type: integer
@@ -622,7 +872,7 @@ paths:
           application/json:
             schema:
               properties:
-                tabName:
+                name:
                   type: string
               type: object
       responses:
@@ -633,7 +883,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 200 }
-                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: TicketName }, ticketId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: Name }, ticketId: { type: integer, example: 1 }, isActive: { type: boolean, example: true } }, type: object }
                 type: object
         '400':
           description: ok
@@ -642,7 +892,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 400 }
-                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the ticketName field.' } }, type: object }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the name field.' } }, type: object }
                 type: object
         '401':
           description: ok
@@ -669,7 +919,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 404 }
-                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The tab does not exist.' } }, type: object }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The Tab does not exist.' } }, type: object }
                 type: object
   /tickets:
     get:
@@ -718,7 +968,7 @@ paths:
       tags:
         - Tickets
       summary: 'Requires Authentication'
-      description: 'Create a ticket, if success return it'
+      description: 'Create a Ticket, if success return it'
       operationId: e1688fdf0fe222b4c77f2cc85334f2f4
       parameters:
         -
@@ -733,7 +983,7 @@ paths:
           application/json:
             schema:
               properties:
-                ticketName:
+                name:
                   type: string
               type: object
       responses:
@@ -753,7 +1003,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 400 }
-                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the ticketName field.' } }, type: object }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the name field.' } }, type: object }
                 type: object
         '401':
           description: ok
@@ -791,7 +1041,7 @@ paths:
         -
           name: id
           in: path
-          description: 'Id of the ticket'
+          description: 'Id of the Ticket'
           required: true
           schema:
             type: integer
@@ -830,13 +1080,13 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 404 }
-                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The ticket does not exist.' } }, type: object }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The Ticket does not exist.' } }, type: object }
                 type: object
     delete:
       tags:
         - Tickets
       summary: 'Requires Authentication'
-      description: 'Delete a ticket, if success return it'
+      description: 'Delete a Ticket, if success return it'
       operationId: e8502761d036f914e66a8f73c644702b
       parameters:
         -
@@ -849,7 +1099,7 @@ paths:
         -
           name: id
           in: path
-          description: 'Id of the ticket'
+          description: 'Id of the Ticket'
           required: true
           schema:
             type: integer
@@ -888,13 +1138,13 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 404 }
-                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The ticket does not exist.' } }, type: object }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The Ticket does not exist.' } }, type: object }
                 type: object
     patch:
       tags:
         - Tickets
       summary: 'Requires Authentication'
-      description: 'Update a ticket, if success return it'
+      description: 'Update a Ticket, if success return it'
       operationId: 02a46c9956b32b10e4638ef588914135
       parameters:
         -
@@ -907,7 +1157,7 @@ paths:
         -
           name: id
           in: path
-          description: 'Id of the ticket'
+          description: 'Id of the Ticket'
           required: true
           schema:
             type: integer
@@ -916,7 +1166,7 @@ paths:
           application/json:
             schema:
               properties:
-                ticketName:
+                name:
                   type: string
               type: object
       responses:
@@ -936,7 +1186,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 400 }
-                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the ticketName field.' } }, type: object }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the name field.' } }, type: object }
                 type: object
         '401':
           description: ok
@@ -963,7 +1213,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer, example: 404 }
-                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The ticket does not exist.' } }, type: object }
+                  error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'The Ticket does not exist.' } }, type: object }
                 type: object
   /users:
     get:

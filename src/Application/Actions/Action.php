@@ -22,7 +22,7 @@ use Slim\Exception\HttpUnauthorizedException;
 
 /**
  * @OA\Info(title="My First API", version="0.1"),
- * @OA\Server(url="http://sandbox.exads.rocks/")
+ * @OA\Server(url="https://sandbox.exads.rocks/")
  */
 abstract class Action
 {
@@ -49,8 +49,15 @@ abstract class Action
     }
 
     /**
-     * @throws HttpNotFoundException
+     * @param Request $request
+     * @param Response $response
+     * @param array $args
+     * @return Response
      * @throws HttpBadRequestException
+     * @throws HttpForbiddenException
+     * @throws HttpInternalServerErrorException
+     * @throws HttpNotFoundException
+     * @throws HttpUnauthorizedException
      */
     public function __invoke(Request $request, Response $response, array $args): Response
     {
