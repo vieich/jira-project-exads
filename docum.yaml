@@ -21,15 +21,13 @@ paths:
           required: true
           schema:
             type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                showDeleted:
-                  type: boolean
-                  example: true
-              type: object
+        -
+          name: showDeleted
+          in: query
+          description: 'true or false, based on if you want to see the deleted Item'
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: ok
@@ -330,15 +328,13 @@ paths:
           required: true
           schema:
             type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                showDeleted:
-                  type: boolean
-                  example: true
-              type: object
+        -
+          name: showDeleted
+          in: query
+          description: 'true or false, based on if you want to see the deleted Section'
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: ok
@@ -634,6 +630,13 @@ paths:
           name: Auth-Token
           in: header
           description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: showDeleted
+          in: query
+          description: 'true or false, based on if you want to see the deleted Tabs'
           required: true
           schema:
             type: string
@@ -936,6 +939,13 @@ paths:
           required: true
           schema:
             type: string
+        -
+          name: showDeleted
+          in: query
+          description: 'true or false, based on if you want to see the deleted Tickets'
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: ok
@@ -1227,6 +1237,13 @@ paths:
           name: Auth-Token
           in: header
           description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: showDeleted
+          in: query
+          description: 'true or false, based on if you want to see the deleted Users'
           required: true
           schema:
             type: string

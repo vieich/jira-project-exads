@@ -77,7 +77,7 @@ abstract class Action
             throw new HttpBadRequestException($this->request, $e->getMessage());
         } catch (DomainOperationException $e) {
             throw new HttpInternalServerErrorException($this->request, $e->getMessage());
-        } catch(DomainCredentialsException $e) {
+        } catch (DomainCredentialsException $e) {
             throw new HttpUnauthorizedException($this->request, $e->getMessage());
         }
     }
@@ -101,6 +101,14 @@ abstract class Action
         return $this->request->getServerParams()['HTTP_AUTH_TOKEN'] ?? "";
     }
 
+    protected function getQueryParams(): array
+    {
+        $queryParams = [];
+        parse_str($this->request->getServerParams()['QUERY_STRING'], $queryParams);
+
+        return $queryParams;
+    }
+
     /**
      * @return mixed
      * @throws HttpBadRequestException
@@ -117,9 +125,9 @@ abstract class Action
     /**
      * @param array|object|null $data
      */
-    protected function respondWithData($data = null, int $statusCode = 200): Response
+    protected function respondWithData($data = null, bool $hasNextPage = null, int $statusCode = 200): Response
     {
-        $payload = new ActionPayload($statusCode, $data);
+        $payload = new ActionPayload($statusCode, $data, $hasNextPage);
 
         return $this->respond($payload);
     }

@@ -9,6 +9,8 @@ class ActionPayload implements JsonSerializable
 {
     private $statusCode;
 
+    private $hasNextPage;
+
     /**
      * @var array|object|null
      */
@@ -19,11 +21,13 @@ class ActionPayload implements JsonSerializable
     public function __construct(
         int $statusCode = 200,
         $data = null,
+        $hasNextPage = null,
         ?ActionError $error = null
     ) {
         $this->statusCode = $statusCode;
         $this->data = $data;
         $this->error = $error;
+        $this->hasNextPage = $hasNextPage;
     }
 
     public function getStatusCode(): int
@@ -51,6 +55,9 @@ class ActionPayload implements JsonSerializable
             'statusCode' => $this->statusCode,
         ];
 
+        if ($this->hasNextPage !== null) {
+            $payload['hasNextPage'] = $this->hasNextPage;
+        }
         if ($this->data !== null) {
             $payload['data'] = $this->data;
         } elseif ($this->error !== null) {

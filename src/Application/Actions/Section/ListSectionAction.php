@@ -2,11 +2,9 @@
 
 namespace App\Application\Actions\Section;
 
-use App\Domain\DomainException\DomainDataFormatException;
 use App\Domain\Permission\Exception\PermissionAuthTokenException;
 use App\Domain\Permission\Exception\PermissionNoAuthorizationException;
 use App\Domain\Permission\Permission;
-use App\Domain\User\Exception\UserNoAuthorizationException;
 use App\Domain\User\Exception\UserNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -25,10 +23,12 @@ class ListSectionAction extends SectionAction
      *          description = "Token for authentication",
      *          required = true,
      *     ),
-     *     @OA\RequestBody (
-     *          @OA\JsonContent(
-     *               type = "object",
-     *               @OA\Property (property="showDeleted", type="boolean", example = true)          )
+     *     @OA\Parameter (
+     *          name = "showDeleted",
+     *          in = "query",
+     *          @OA\Schema (type = "string"),
+     *          description = "true or false, based on if you want to see the deleted Section",
+     *          required = true,
      *     ),
      *     @OA\Response(
      *          response="200",
@@ -71,20 +71,22 @@ class ListSectionAction extends SectionAction
      * @throws UserNotFoundException
      * @throws PermissionNoAuthorizationException
      * @throws PermissionAuthTokenException
-     * @throws DomainDataFormatException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
-        $data = $this->getFormData();
-        $showDeleted = $data['showDeleted'] ?? false;
+        $queryParams = $this->getQueryParams();
+        $pageNumber = $queryParams['pageNumber'] ?? false;
+        $recordsPerPage = $queryParams['recordsPerPage'] ?? false;
+        $showDeleted = $queryParams['showDeleted'] ?? false;
         $operation[] = 'read';
 
         $sectionRepo = $this->sectionRepository;
         $sectionValidator = $this->sectionValidator;
+        $sectionPaginator = $this->sectionPaginator;
 
         if ($showDeleted) {
-            $sectionValidator->checkIfShowDeletedIsValid($showDeleted);
+            $showDeleted = $sectionValidator->transformShowDeletedIntoBoolean($showDeleted);
             $operation[] = 'showDeleted';
         }
 
@@ -92,8 +94,9 @@ class ListSectionAction extends SectionAction
 
         $sections = $sectionRepo->findAll($showDeleted);
 
-        $this->logger->info('Sections list viewed.');
+        $paginatedSections = $sectionPaginator->getDataPaginated($pageNumber, $recordsPerPage, $sections);
 
-        return $this->respondWithData($sections);
+        $this->logger->info('Sections list viewed.');
+        return $this->respondWithData($paginatedSections['data'], $paginatedSections['hasNextPage']);
     }
 }

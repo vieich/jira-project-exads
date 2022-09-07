@@ -90,7 +90,6 @@ class CreateItemAction extends ItemAction
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
-
         $data = $this->getFormData();
         $name = $data['name'] ?? null;
         $sectionId = $data['sectionId'] ?? null;

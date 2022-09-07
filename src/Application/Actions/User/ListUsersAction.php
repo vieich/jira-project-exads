@@ -25,6 +25,13 @@ class ListUsersAction extends UserAction
      *          description = "Token for authentication",
      *          required = true,
      *     ),
+     *     @OA\Parameter (
+     *          name = "showDeleted",
+     *          in = "query",
+     *          @OA\Schema (type = "string"),
+     *          description = "true or false, based on if you want to see the deleted Users",
+     *          required = true,
+     *     ),
      *     @OA\Response(
      *          response="200",
      *          description="ok",
@@ -63,7 +70,6 @@ class ListUsersAction extends UserAction
      *          )
      *     )
      * )
-     * @throws DomainDataFormatException
      * @throws PermissionNoAuthorizationException
      * @throws PermissionAuthTokenException
      * @throws UserNotFoundException
@@ -71,15 +77,18 @@ class ListUsersAction extends UserAction
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
-        $data = $this->getFormData();
-        $showDeleted = $data['showDeleted'] ?? false;
+        $queryParams = $this->getQueryParams();
+        $showDeleted = $queryParams['showDeleted'] ?? false;
+        $pageNumber = $queryParams['pageNumber'] ?? false;
+        $recordsPerPage = $queryParams['recordsPerPage'] ?? false;
         $operation[] = 'read';
 
         $userRepo = $this->userRepository;
         $userValidator = $this->userValidator;
+        $userPaginator = $this->userPaginator;
 
         if ($showDeleted) {
-            $userValidator->checkIfShowDeletedIsValid($showDeleted);
+            $showDeleted = $userValidator->transformShowDeletedIntoBoolean($showDeleted);
             $operation[] = 'showDeleted';
         }
 
@@ -87,8 +96,9 @@ class ListUsersAction extends UserAction
 
         $users = $userRepo->findAll($showDeleted);
 
-        $this->logger->info("Users list was viewed.");
+        $paginatedUsers = $userPaginator->getDataPaginated($pageNumber, $recordsPerPage, $users);
 
-        return $this->respondWithData($users);
+        $this->logger->info("Users list was viewed.");
+        return $this->respondWithData($paginatedUsers['data'], $paginatedUsers['hasNextPage']);
     }
 }

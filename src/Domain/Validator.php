@@ -2,9 +2,7 @@
 
 namespace App\Domain;
 
-use App\Domain\DomainException\DomainDataFormatException;
 use App\Domain\DomainException\DomainPayloadStructureValidatorException;
-use App\Domain\DomainException\DomainRecordWithoutAuthorizationException;
 
 class Validator
 {
@@ -27,13 +25,10 @@ class Validator
     }
 
 
-    /**
-     * @throws DomainDataFormatException
-     */
-    public function checkIfShowDeletedIsValid($showHistoric): void
+    public function transformShowDeletedIntoBoolean($showDeleted): bool
     {
-        if (!is_bool($showHistoric)) {
-            throw new DomainDataFormatException('Field showHistoric must be true or false');
-        }
+        return $showDeleted === 'true';
     }
+
 }
+

@@ -24,6 +24,13 @@ class ListTabAction extends TabAction
      *          description = "Token for authentication",
      *          required = true,
      *     ),
+     *     @OA\Parameter (
+     *          name = "showDeleted",
+     *          in = "query",
+     *          @OA\Schema (type = "string"),
+     *          description = "true or false, based on if you want to see the deleted Tabs",
+     *          required = true,
+     *     ),
      *     @OA\Response(
      *          response="200",
      *          description="ok",
@@ -70,15 +77,18 @@ class ListTabAction extends TabAction
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
-        $data = $this->getFormData();
-        $showDeleted = $data['showDeleted'] ?? false;
+        $queryParams = $this->getQueryParams();
+        $pageNumber = $queryParams['pageNumber'] ?? false;
+        $recordsPerPage = $queryParams['recordsPerPage'] ?? false;
+        $showDeleted = $queryParams['showDeleted'] ?? false;
         $operation[] = 'read';
 
         $tabValidator = $this->tabValidator;
         $tabRepo = $this->tabRepository;
+        $tabPaginator = $this->tabPaginator;
 
         if ($showDeleted) {
-            $tabValidator->checkIfShowDeletedIsValid($showDeleted);
+            $showDeleted = $tabValidator->transformShowDeletedIntoBoolean($showDeleted);
             $operation[] = 'showDeleted';
         }
 
@@ -86,8 +96,9 @@ class ListTabAction extends TabAction
 
         $tabs = $tabRepo->findAll($showDeleted);
 
-        $this->logger->info('Tab list was viewed.');
+        $paginatedTabs = $tabPaginator->getDataPaginated($pageNumber, $recordsPerPage, $tabs);
 
-        return $this->respondWithData($tabs);
+        $this->logger->info('Tab list was viewed.');
+        return $this->respondWithData($paginatedTabs['data'], $paginatedTabs['hasNextPage']);
     }
 }

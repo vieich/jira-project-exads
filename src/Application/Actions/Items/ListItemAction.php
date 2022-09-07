@@ -26,10 +26,12 @@ class ListItemAction extends ItemAction
      *          description = "Token for authentication",
      *          required = true,
      *     ),
-     *     @OA\RequestBody (
-     *          @OA\JsonContent(
-     *               type = "object",
-     *               @OA\Property (property="showDeleted", type="boolean", example = true)          )
+     *     @OA\Parameter (
+     *          name = "showDeleted",
+     *          in = "query",
+     *          @OA\Schema (type = "string"),
+     *          description = "true or false, based on if you want to see the deleted Item",
+     *          required = true,
      *     ),
      *     @OA\Response(
      *          response="200",
@@ -73,19 +75,21 @@ class ListItemAction extends ItemAction
      * @throws UserNotFoundException
      * @throws PermissionNoAuthorizationException
      * @throws PermissionAuthTokenException
-     * @throws DomainDataFormatException
      */
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
-        $data = $this->getFormData();
-        $showDeleted = $data['showDeleted'] ?? false;
+        $queryParams = $this->getQueryParams();
+        $pageNumber = $queryParams['pageNumber'] ?? false;
+        $recordsPerPage = $queryParams['recordsPerPage'] ?? false;
+        $showDeleted = $queryParams['showDeleted'] ?? false;
         $operation[] = 'read';
 
         $itemRepository = $this->itemRepository;
+        $itemPaginator = $this->itemPaginator;
 
         if ($showDeleted) {
-            $this->itemValidator->checkIfShowDeletedIsValid($showDeleted);
+            $showDeleted = $this->itemValidator->transformShowDeletedIntoBoolean($showDeleted);
             $operation[] = 'showDeleted';
         }
 
@@ -93,8 +97,9 @@ class ListItemAction extends ItemAction
 
         $items = $itemRepository->findAll($showDeleted);
 
-        $this->logger->info('List of items viewed.');
+        $paginatedItems = $itemPaginator->getDataPaginated($pageNumber, $recordsPerPage, $items);
 
-        return $this->respondWithData($items);
+        $this->logger->info('List of items viewed.');
+        return $this->respondWithData($paginatedItems['data'], $paginatedItems['hasNextPage']);
     }
 }

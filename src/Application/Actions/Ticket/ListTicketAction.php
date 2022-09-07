@@ -24,6 +24,13 @@ class ListTicketAction extends TicketAction
      *          description = "Token for authentication",
      *          required = true,
      *     ),
+     *     @OA\Parameter (
+     *          name = "showDeleted",
+     *          in = "query",
+     *          @OA\Schema (type = "string"),
+     *          description = "true or false, based on if you want to see the deleted Tickets",
+     *          required = true,
+     *     ),
      *     @OA\Response(
      *          response="200",
      *          description="ok",
@@ -62,7 +69,6 @@ class ListTicketAction extends TicketAction
      *          )
      *     )
      * )
-     * @throws DomainDataFormatException
      * @throws PermissionNoAuthorizationException
      * @throws PermissionAuthTokenException
      * @throws UserNotFoundException
@@ -70,24 +76,27 @@ class ListTicketAction extends TicketAction
     protected function action(): Response
     {
         $auth_token = $this->getAuthTokenHeader();
-        $data = $this->getFormData();
-        $showDeleted = $data['showDeleted'] ?? false;
+        $queryParams = $this->getQueryParams();
+        $pageNumber = $queryParams['pageNumber'] ?? false;
+        $recordsPerPage = $queryParams['recordsPerPage'] ?? false;
+        $showDeleted = $queryParams['showDeleted'] ?? false;
         $operation[] = 'read';
 
         $ticketValidator = $this->ticketValidator;
         $ticketRepo = $this->ticketRepository;
+        $ticketPaginator = $this->ticketPaginator;
 
         if ($showDeleted) {
-            $ticketValidator->checkIfShowDeletedIsValid($showDeleted);
+            $showDeleted = $ticketValidator->transformShowDeletedIntoBoolean($showDeleted);
             $operation[] = 'showDeleted';
         }
 
         (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
         $tickets = $ticketRepo->findAll($showDeleted);
+        $paginatedTickets = $ticketPaginator->getDataPaginated($pageNumber, $recordsPerPage, $tickets);
 
         $this->logger->info('Ticket list was viewed.');
-
-        return $this->respondWithData($tickets);
+        return $this->respondWithData($paginatedTickets['data'], $paginatedTickets['hasNextPage']);
     }
 }
