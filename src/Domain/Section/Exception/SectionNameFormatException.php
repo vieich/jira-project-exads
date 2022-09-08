@@ -6,6 +6,6 @@ use App\Domain\DomainException\DomainDataFormatException;
 
 class SectionNameFormatException extends DomainDataFormatException
 {
-    public $message = 'Section name does not accept special characters, and must have 3 to 8 characters';
+    public $message = 'Section name invalid, only letters, numbers and _ accepted, and must have 3 to 8 characters';
 
 }

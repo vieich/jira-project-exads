@@ -101,8 +101,9 @@ class ListUsersAction extends UserAction
         $userValidator = $this->userValidator;
         $userPaginator = $this->userPaginator;
 
+        $showDeleted = $userValidator->transformShowDeletedIntoBoolean($showDeleted);
+
         if ($showDeleted) {
-            $showDeleted = $userValidator->transformShowDeletedIntoBoolean($showDeleted);
             $operation[] = 'showDeleted';
         }
 

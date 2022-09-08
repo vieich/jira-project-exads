@@ -20,7 +20,7 @@ class UserValidator extends Validator
          * Only A,a,numbers and _ allowed
          * Must have between 3 and 12 characters
          */
-        if (!preg_match("/^[A-Za-z]\\w{2,11}$/", $name)) {
+        if (!preg_match("/^[A-Za-z]\\w{3,11}$/", $name)) {
             throw new UserUsernameFormatException();
         }
     }

@@ -101,9 +101,11 @@ class ListItemAction extends ItemAction
 
         $itemRepository = $this->itemRepository;
         $itemPaginator = $this->itemPaginator;
+        $itemValidator = $this->itemValidator;
+
+        $showDeleted = $itemValidator->transformShowDeletedIntoBoolean($showDeleted);
 
         if ($showDeleted) {
-            $showDeleted = $this->itemValidator->transformShowDeletedIntoBoolean($showDeleted);
             $operation[] = 'showDeleted';
         }
 

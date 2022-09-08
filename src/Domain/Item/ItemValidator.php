@@ -13,8 +13,8 @@ class ItemValidator extends Validator
      */
     public function checkIfItemNameIsValid($itemName): void
     {
-        if (!preg_match("/^[A-Za-z0-9 ]{2,15}$/", $itemName)) {
-            throw new ItemNameFormatException('Name format');
+        if (!preg_match("/^\\w{3,8}$/", $itemName)) {
+            throw new ItemNameFormatException();
         }
     }
 

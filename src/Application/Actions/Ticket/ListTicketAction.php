@@ -100,8 +100,9 @@ class ListTicketAction extends TicketAction
         $ticketRepo = $this->ticketRepository;
         $ticketPaginator = $this->ticketPaginator;
 
+        $showDeleted = $ticketValidator->transformShowDeletedIntoBoolean($showDeleted);
+
         if ($showDeleted) {
-            $showDeleted = $ticketValidator->transformShowDeletedIntoBoolean($showDeleted);
             $operation[] = 'showDeleted';
         }
 

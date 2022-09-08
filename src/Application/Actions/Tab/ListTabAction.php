@@ -101,8 +101,9 @@ class ListTabAction extends TabAction
         $tabRepo = $this->tabRepository;
         $tabPaginator = $this->tabPaginator;
 
+        $showDeleted = $tabValidator->transformShowDeletedIntoBoolean($showDeleted);
+
         if ($showDeleted) {
-            $showDeleted = $tabValidator->transformShowDeletedIntoBoolean($showDeleted);
             $operation[] = 'showDeleted';
         }
 

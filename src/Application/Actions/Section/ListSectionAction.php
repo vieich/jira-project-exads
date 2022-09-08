@@ -99,8 +99,9 @@ class ListSectionAction extends SectionAction
         $sectionValidator = $this->sectionValidator;
         $sectionPaginator = $this->sectionPaginator;
 
+        $showDeleted = $sectionValidator->transformShowDeletedIntoBoolean($showDeleted);
+
         if ($showDeleted) {
-            $showDeleted = $sectionValidator->transformShowDeletedIntoBoolean($showDeleted);
             $operation[] = 'showDeleted';
         }
 
