@@ -49,7 +49,7 @@ return function (App $app) {
         $group->post('', CreateUserAction::class);
         $group->patch('/{id}', UpdateUserUsernameAction::class);
         $group->patch('/password/{id}', UpdateUserPasswordAction::class);
-        $group->delete('/{username}', DeleteUserAction::class);
+        $group->delete('/{id}', DeleteUserAction::class);
         $group->post('/login', LoginUserAction::class);
     });
 

@@ -324,3 +324,15 @@
 [2022-09-07T12:44:06.888395-04:00] slim-app.INFO: List of items viewed. [] {"uid":"68eef6d"}
 [2022-09-07T12:44:15.693151-04:00] slim-app.INFO: List of items viewed. [] {"uid":"53cbee3"}
 [2022-09-07T12:44:19.735689-04:00] slim-app.INFO: List of items viewed. [] {"uid":"034daf0"}
+[2022-09-08T06:22:38.920814-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"79b5ebf"}
+[2022-09-08T06:22:58.890498-04:00] slim-app.INFO: List of items viewed. [] {"uid":"7adb561"}
+[2022-09-08T06:23:06.995206-04:00] slim-app.INFO: List of items viewed. [] {"uid":"175bcb2"}
+[2022-09-08T06:23:12.752986-04:00] slim-app.INFO: List of items viewed. [] {"uid":"4ff44d3"}
+[2022-09-08T06:23:15.752458-04:00] slim-app.INFO: List of items viewed. [] {"uid":"7c765b6"}
+[2022-09-08T07:50:32.298746-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"7d7a869"}
+[2022-09-08T07:50:40.332928-04:00] slim-app.INFO: User with id 29 created [] {"uid":"fca7a6f"}
+[2022-09-08T08:01:51.443148-04:00] slim-app.INFO: vitinho successfully log in. [] {"uid":"dba33c0"}
+[2022-09-08T08:02:18.879560-04:00] slim-app.INFO: Users list was viewed. [] {"uid":"6498935"}
+[2022-09-08T08:03:15.306471-04:00] slim-app.INFO: User with id: 5 deleted. [] {"uid":"20f1779"}
+[2022-09-08T08:03:48.838742-04:00] slim-app.INFO: Users list was viewed. [] {"uid":"4d72129"}
+[2022-09-08T08:03:58.926103-04:00] slim-app.INFO: Users list was viewed. [] {"uid":"2be302e"}

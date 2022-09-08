@@ -105,23 +105,22 @@ class UserRepo extends Database implements UserRepository
      * @throws UserOperationException
      * @throws UserNotFoundException
      */
-    public function deleteUser(string $username): array
+    public function deleteUser(int $userId): array
     {
-        $user = $this->checkIfUserExists($username);
+        $user = $this->checkIfUserExists($userId);
 
-        $query = "UPDATE users SET name = :username , is_active = false WHERE name = :name";
+        $query = "UPDATE users SET is_active = false WHERE id = :id";
 
         $stmt = $this->connection->prepare($query);
-        $stmt->bindValue('name', $username);
-        $stmt->bindValue('username', $username . 'id' . $user->getId());
+        $stmt->bindValue('id', $userId, PDO::PARAM_INT);
         $stmt->execute();
 
         if ($stmt->rowCount() === 0) {
-            throw new UserOperationException('Failed deleting user with username' . $username);
+            throw new UserOperationException('Failed deleting user with id' . $userId);
         }
 
         return [
-            'message' => $username . ' deleted',
+            'message' => 'User with id ' . $userId . ' deleted',
             'hasSuccess' => true,
         ];
     }
@@ -197,18 +196,18 @@ class UserRepo extends Database implements UserRepository
     /**
      * @throws UserNotFoundException
      */
-    public function checkIfUserExists($username): User
+    public function checkIfUserExists(int $userId): User
     {
-        $query = "SELECT id, name, role, is_active, password FROM users WHERE name = :name AND is_active = true";
+        $query = "SELECT id, name, role, is_active, password FROM users WHERE id = :id AND is_active = true";
 
         $stmt = $this->getConnection()->prepare($query);
-        $stmt->bindValue('name', $username);
+        $stmt->bindValue('id', $userId);
         $stmt->execute();
 
         $user = $stmt->fetch();
 
         if (!$user) {
-            throw new UserNotFoundException('User ' . $username . ' does not exist.');
+            throw new UserNotFoundException('User with id ' . $userId . ' does not exist.');
         }
 
         return new User(

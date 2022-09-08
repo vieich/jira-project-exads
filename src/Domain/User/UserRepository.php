@@ -11,7 +11,7 @@ interface UserRepository
     public function createUser(string $name, string $role, string $password): User;
     public function updateUserUsername(int $userId, string $username): User;
     public function updateUserPassword(int $userId, string $oldPassword, string $newPassword): array;
-    public function deleteUser(string $username);
+    public function deleteUser(int $userId);
     public function createToken(string $username);
-    public function checkIfUserExists($username);
+    public function checkIfUserExists(int $userId);
 }

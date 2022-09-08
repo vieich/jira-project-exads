@@ -30,6 +30,20 @@ class ListSectionAction extends SectionAction
      *          description = "true or false, based on if you want to see the deleted Section",
      *          required = true,
      *     ),
+     *     @OA\Parameter (
+     *          name = "pageNumber",
+     *          in = "query",
+     *          @OA\Schema (type = "string"),
+     *          description = "number of the page, default is 1",
+     *          required = false,
+     *     ),
+     *     @OA\Parameter (
+     *          name = "recordsPerPage",
+     *          in = "query",
+     *          @OA\Schema (type = "string"),
+     *          description = "number of records presented on the page, default is 10",
+     *          required = false,
+     *     ),
      *     @OA\Response(
      *          response="200",
      *          description="ok",

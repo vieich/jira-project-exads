@@ -13,15 +13,15 @@ class DeleteUserAction extends UserAction
 {
     /**
      * @OA\Delete(
-     *     path="/users/{username}",
+     *     path="/users/{id}",
      *     tags= {"Users"},
      *     summary="Requires Authentication",
      *     description="Search for an object, if found return it",
      *     @OA\Parameter (
-     *          name = "username",
+     *          name = "id",
      *          in = "path",
-     *          @OA\Schema (type = "string"),
-     *          description = "username of the user",
+     *          @OA\Schema (type = "integer"),
+     *          description = "id of the User",
      *          required = true,
      *      ),
      *     @OA\Parameter (
@@ -97,16 +97,15 @@ class DeleteUserAction extends UserAction
         $auth_token = $this->getAuthTokenHeader();
         $operation[] = 'delete';
 
-        $username = $this->resolveArg('username');
+        $userId = (int) $this->resolveArg('id');
 
         $userRepo = $this->userRepository;
 
         (new Permission($this->permissionRepository))->checkIfHasAccess($auth_token, $operation);
 
-        $user = $userRepo->deleteUser($username);
+        $user = $userRepo->deleteUser($userId);
 
-        $this->logger->info($username . ' deleted.');
-
+        $this->logger->info('User with id: ' . $userId . ' deleted.');
         return $this->respondWithData($user);
     }
 }
