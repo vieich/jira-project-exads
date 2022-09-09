@@ -13,7 +13,7 @@ class TabValidator extends Validator
      */
     public function checkIfTabNameIsValid($tabName): void
     {
-        if (!preg_match("/^\\w{3,8}$/", $tabName)) {
+        if (!preg_match("/^\\w{3,13}$/", $tabName)) {
             throw new TabNameFormatException();
         }
     }

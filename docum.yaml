@@ -196,7 +196,7 @@ paths:
       tags:
         - Items
       summary: 'Requires Authentication'
-      description: 'Delete a Item, if success return it'
+      description: 'Delete a Item'
       operationId: e3cec50324b2cc6d5048b95e358b7e96
       parameters:
         -
@@ -517,7 +517,7 @@ paths:
       tags:
         - Sections
       summary: 'Requires Authentication'
-      description: 'Delete a Section, if success return it'
+      description: 'Delete a Section'
       operationId: 2bc30247eba92feea2a5f4b415f3717a
       parameters:
         -
@@ -836,7 +836,7 @@ paths:
       tags:
         - Tabs
       summary: 'Requires Authentication'
-      description: 'Delete a Tab, if success return it'
+      description: 'Delete a Tab'
       operationId: 1acd1b5577c29006cb01f6ee02e2cb8d
       parameters:
         -
@@ -1152,7 +1152,7 @@ paths:
       tags:
         - Tickets
       summary: 'Requires Authentication'
-      description: 'Delete a Ticket, if success return it'
+      description: 'Delete a Ticket'
       operationId: e8502761d036f914e66a8f73c644702b
       parameters:
         -
@@ -1286,7 +1286,7 @@ paths:
       tags:
         - Users
       summary: 'Requires Authentication'
-      description: 'Search for an object, if found return it'
+      description: 'Search for all Users, if found return it'
       operationId: c54f94d6d3373769c1d7cf3dfe97841d
       parameters:
         -
@@ -1325,6 +1325,7 @@ paths:
               schema:
                 properties:
                   statusCode: { type: integer }
+                  hasNextPage: { type: boolean }
                   data: { type: array, items: { properties: { id: { type: integer }, username: { type: string }, role: { type: string }, isActive: { type: boolean } }, type: object } }
                 type: object
         '401':
@@ -1382,7 +1383,7 @@ paths:
       tags:
         - Users
       summary: 'Requires Authentication'
-      description: 'Search for an object, if found return it'
+      description: 'Search for an User, if found return it'
       operationId: dc36fd290dc024d1a13bdc9e8c7c4bc2
       parameters:
         -
@@ -1440,7 +1441,7 @@ paths:
       tags:
         - Users
       summary: 'Requires Authentication'
-      description: 'Search for an object, if found return it'
+      description: 'Delete a User'
       operationId: 6a583c710458493a3d9888df25475de3
       parameters:
         -
@@ -1503,6 +1504,81 @@ paths:
                   statusCode: { type: integer, example: 404 }
                   error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'User username does not exist.' } }, type: object }
                 type: object
+    patch:
+      tags:
+        - Users
+      summary: 'Requires Authentication'
+      description: 'Update a User username, if success return it'
+      operationId: 5667cd08c0df806334cc79071d3e9890
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: id
+          in: path
+          description: 'Id of the User'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { id: { type: integer, example: 1 }, username: { type: string, example: Vitor }, role: { type: string, example: client }, isActive: { type: boolean, example: true } }, type: object }
+                type: object
+        '400':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 400 }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the oldPassword field.' } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHORIZED }, description: { type: string, example: 'The user that you are trying to update is not yours.' } }, type: object }
+                type: object
   /users/login:
     post:
       tags:
@@ -1546,4 +1622,82 @@ paths:
                 properties:
                   statusCode: { type: integer, example: 404 }
                   error: { properties: { type: { type: string, example: RESOURCE_NOT_FOUND }, description: { type: string, example: 'User username does not exist.' } }, type: object }
+                type: object
+  '/users/password/{id}':
+    patch:
+      tags:
+        - Users
+      summary: 'Requires Authentication'
+      description: 'Update a User password'
+      operationId: 8edcccfc7863d423f3b80efaa436db5e
+      parameters:
+        -
+          name: Auth-Token
+          in: header
+          description: 'Token for authentication'
+          required: true
+          schema:
+            type: string
+        -
+          name: id
+          in: path
+          description: 'Id of the User'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                oldPassword:
+                  type: string
+                newPassword:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 200 }
+                  data: { properties: { message: { type: string, example: 'Vitor password was successfully updated' }, hasSuccess: { type: boolean, example: true } }, type: object }
+                type: object
+        '400':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 400 }
+                  error: { properties: { type: { type: string, example: BAD_REQUEST }, description: { type: string, example: 'Payload is not valid, is missing the oldPassword field.' } }, type: object }
+                type: object
+        '401':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHENTICATED }, description: { type: string, example: 'Log in to get an valid auth token.' } }, type: object }
+                type: object
+        '403':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 403 }
+                  error: { properties: { type: { type: string, example: INSUFFICIENT_PRIVILEGES }, description: { type: string, example: 'Auth-Token is missing on the header.' } }, type: object }
+                type: object
+        '404':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  statusCode: { type: integer, example: 401 }
+                  error: { properties: { type: { type: string, example: UNAUTHORIZED }, description: { type: string, example: 'The user that you are trying to update is not yours.' } }, type: object }
                 type: object

@@ -16,7 +16,7 @@ class DeleteTabAction extends TabAction
      *     path="/tabs/{id}",
      *     tags= {"Tabs"},
      *     summary="Requires Authentication",
-     *     description="Delete a Tab, if success return it",
+     *     description="Delete a Tab",
      *     @OA\Parameter (
      *          name = "Auth-Token",
      *          in = "header",

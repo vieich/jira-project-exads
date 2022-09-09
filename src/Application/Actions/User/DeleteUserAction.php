@@ -16,7 +16,7 @@ class DeleteUserAction extends UserAction
      *     path="/users/{id}",
      *     tags= {"Users"},
      *     summary="Requires Authentication",
-     *     description="Search for an object, if found return it",
+     *     description="Delete a User",
      *     @OA\Parameter (
      *          name = "id",
      *          in = "path",

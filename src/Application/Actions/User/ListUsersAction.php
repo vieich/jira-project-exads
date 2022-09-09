@@ -17,7 +17,7 @@ class ListUsersAction extends UserAction
      *     path="/users",
      *     tags= {"Users"},
      *     summary="Requires Authentication",
-     *     description="Search for an object, if found return it",
+     *     description="Search for all Users, if found return it",
      *     @OA\Parameter (
      *          name = "Auth-Token",
      *          in = "header",
@@ -51,6 +51,7 @@ class ListUsersAction extends UserAction
      *          description="ok",
      *          @OA\JsonContent(type = "object",
      *               @OA\Property (property="statusCode", type="integer"),
+     *               @OA\Property (property="hasNextPage", type="boolean"),
      *               @OA\Property (property="data", type="array",
      *                      @OA\Items(
      *                      @OA\Property (property="id", type="integer"),

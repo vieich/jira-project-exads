@@ -17,7 +17,7 @@ class DeleteSectionAction extends SectionAction
      *     path="/sections/{id}",
      *     tags= {"Sections"},
      *     summary="Requires Authentication",
-     *     description="Delete a Section, if success return it",
+     *     description="Delete a Section",
      *     @OA\Parameter (
      *          name = "Auth-Token",
      *          in = "header",

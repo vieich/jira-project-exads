@@ -16,7 +16,7 @@ class DeleteTicketAction extends TicketAction
      *     path="/tickets/{id}",
      *     tags= {"Tickets"},
      *     summary="Requires Authentication",
-     *     description="Delete a Ticket, if success return it",
+     *     description="Delete a Ticket",
      *     @OA\Parameter (
      *          name = "Auth-Token",
      *          in = "header",

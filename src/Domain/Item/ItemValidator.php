@@ -13,7 +13,7 @@ class ItemValidator extends Validator
      */
     public function checkIfItemNameIsValid($itemName): void
     {
-        if (!preg_match("/^\\w{3,8}$/", $itemName)) {
+        if (!preg_match("/^\\w{3,13}$/", $itemName)) {
             throw new ItemNameFormatException();
         }
     }

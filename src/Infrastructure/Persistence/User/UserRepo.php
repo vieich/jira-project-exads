@@ -221,15 +221,20 @@ class UserRepo extends Database implements UserRepository
 
     /**
      * @throws UserNotFoundException
+     * @throws UserOperationException
      */
     public function updateUserUsername(int $userId, string $username): User
     {
         $query = 'UPDATE users SET name = :name WHERE id = :id';
 
-        $stmt = $this->getConnection()->prepare($query);
-        $stmt->bindValue('name', $username);
-        $stmt->bindValue('id', $userId, PDO::PARAM_INT);
-        $stmt->execute();
+        try {
+            $stmt = $this->getConnection()->prepare($query);
+            $stmt->bindValue('name', $username);
+            $stmt->bindValue('id', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (\PDOException $e) {
+            throw new UserOperationException('Username already exists');
+        }
 
         return $this->findUserOfId($userId);
     }

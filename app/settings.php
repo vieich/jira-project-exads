@@ -21,12 +21,12 @@ return function (ContainerBuilder $containerBuilder) {
                     'level' => Logger::DEBUG,
                 ],
                 'db' => [
-                    'driver' => 'mysql',
-                    'host' => '10.42.0.2:3306',
-                    'database' => 'sandbox',
-                    'username' => 'sandbox',
-                    'password' => 'sandbox',
-                    'charset' => 'utf8mb4',
+                    'driver' => $_ENV['DB_DRIVER'],
+                    'host' => $_ENV['DB_HOST'],
+                    'database' => $_ENV['DB_NAME'],
+                    'username' => $_ENV['DB_USER'],
+                    'password' => $_ENV['DB_PASSWORD'],
+                    'charset' => $_ENV['DB_CHARSET'],
                     'flags' => [
                         // Turn off persistent connections
                         PDO::ATTR_PERSISTENT => true,

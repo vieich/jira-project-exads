@@ -83,7 +83,6 @@ class ListTabAction extends TabAction
      *          )
      *     )
      * )
-     * @throws DomainDataFormatException
      * @throws PermissionNoAuthorizationException
      * @throws PermissionAuthTokenException
      * @throws UserNotFoundException

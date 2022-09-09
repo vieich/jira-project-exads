@@ -17,7 +17,7 @@ class ViewUserAction extends UserAction
      *     path="/users/{id}",
      *     tags= {"Users"},
      *     summary="Requires Authentication",
-     *     description="Search for an object, if found return it",
+     *     description="Search for an User, if found return it",
      *     @OA\Parameter (
      *          name = "id",
      *          in = "path",

@@ -17,7 +17,7 @@ class DeleteItemAction extends ItemAction
      *     path="/items/{id}",
      *     tags= {"Items"},
      *     summary="Requires Authentication",
-     *     description="Delete a Item, if success return it",
+     *     description="Delete a Item",
      *     @OA\Parameter (
      *          name = "Auth-Token",
      *          in = "header",
